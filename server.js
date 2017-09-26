@@ -53,7 +53,7 @@ function parseNode(n) {
 
 function parseNodes(data,clientid) {
     data.forEach(function(n) {
-        console.log(n);
+        //console.log(n);
         if (n.topic || n.features) {
             var ndata = parseNode(n);
             console.log('found node',ndata);
@@ -74,7 +74,7 @@ function parseNodes(data,clientid) {
 var topicFunctions = {
     "init":function(packet,client) {
         var data = parsePacket(packet);
-        //console.log(data);
+        console.log('preinit',data,String(client.id));
         if (data && data.length)
             parseNodes(data,client.id);
 
@@ -99,9 +99,9 @@ MongoClient.connect(settings.mongoPersistanceUrl, function(err, db) {
     // fired when a message is received
     server.on('published', function(packet, client) {
         //packet.topic
-        //console.log('Published',packet.topic);
+        //console.log('got',packet.topic);
         for(var topic in topicFunctions) {
-            console.log(settings.baseTopic+topic);
+            //console.log(settings.baseTopic+topic);
             if (String(settings.baseTopic+topic)==String(packet.topic)) {
                 console.log('found func',topic);
                 topicFunctions[topic](packet,client,server);
@@ -123,6 +123,7 @@ MongoClient.connect(settings.mongoPersistanceUrl, function(err, db) {
     server.on('ready', function(){
         console.log('Waiting for connections');
     });
+   
 
     //console.log("Connected correctly to server");
     //db.close();

@@ -1,0 +1,27 @@
+<html>
+    <head>
+      <script src="/mqtt.js"></script>
+    </head>
+    <body>
+        <h1>Hoho</h1>
+        <ul id="evts"></ul>
+      <script>
+        var client = mqtt.connect();
+        client.subscribe("homeninja/clientadded");
+        var prt = document.getElementById('evts');
+        client.on("message", function(topic, payload) {
+          var li = document.createElement('li');
+          li.innerHTML = '<span>'+([topic, payload].join(": "))+'</span>';
+          prt.appendChild(li);
+          //client.end();
+        });
+
+        var serverNode = {
+            features:['webgui','notification'],
+            topic:'homeninja/serverweb'
+        };
+  
+        client.publish("homeninja/init", JSON.stringify(serverNode));
+      </script>
+    </body>
+  </html>
