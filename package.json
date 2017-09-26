@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "mongodb": "^2.2.31",
-    "mosca": "^2.5.2"
+    "mosca": "^2.5.2",
+    "node.extend": "^2.0.0"
   }
 }
