@@ -8,7 +8,9 @@ module.exports = {
             type: 'mongo',
             url: mongoBaseUrl + 'homepersistance',
             pubsubCollection: 'ascoltatori',
-            mongo: {}
+            mongo: {
+                
+            }
         }
     },
     mongoPersistanceUrl: mongoBaseUrl + 'homeninja'
