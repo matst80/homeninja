@@ -1,32 +1,12 @@
 var settings = require('./settings');
-var mosca = require('mosca');
+
 var extend = require('node.extend');
 var MongoClient = require('mongodb').MongoClient;
 
-var Server = require('node-ssdp').Server,
-    server = new Server();
+var baseServer = require('./baseserver')(settings);
 
-settings.usn.forEach(function(usn) {
-    server.addUSN(usn);
-});
-
-server.on('advertise-alive', function (headers) {
-// Expire old devices from your cache.
-// Register advertising device somewhere (as designated in http headers heads)
-    console.log('alive',headers);
-});
-
-server.on('advertise-bye', function (headers) {
-// Remove specified device from cache.
-    console.log('bye',headers);
-});
-
-// start the server
-server.start();
-
-process.on('exit', function(){
-    server.stop() // advertise shutting down and stop listening
-})
+//var http     = require('http'), 
+var dbCache = {};
 
 var baseNode = {
     clientId: '',
@@ -97,71 +77,53 @@ function parseNodes(data,clientid) {
     });
 }
 
-//parsePacket('{"states":{"item1":true}}');
-//parsePacket('state=1');
 
-var topicFunctions = {
-    "init":function(packet,client) {
-        var data = parsePacket(packet);
-        console.log('preinit',data,String(client.id));
-        if (data && data.length)
-            parseNodes(data,client.id);
+baseServer.addTopicHandler("init",function(packet,client) {
+    var data = parsePacket(packet);
+    console.log('preinit',data,String(client.id));
+    if (data && data.length)
+        parseNodes(data,client.id);
 
-        console.log('init',states);
+    console.log('init',states);
 
-        client.server.publish({
-            topic:settings.baseTopic+"clientadded",
-            payload:JSON.stringify(states),
-            qos: 0, // 0, 1, or 2
-            retain: false // or true
-        },function(){
-            console.log('init packet sent');
-        });
-    },
-    "save":function(packet,client) {
-        var data = JSON.parse(packet.payload.toString());
-        console.log('saving',data);
-    },
-    "load":function(packet,client){
-        console.log('load');
-    }
-};
+    baseServer.mqttServer.publish({
+        topic:settings.baseTopic+"clientadded",
+        payload:JSON.stringify(states),
+        qos: 0, // 0, 1, or 2
+        retain: false // or true
+    },function(){
+        console.log('init packet sent');
+    });
+});
+
+baseServer.addApiHandler("save", function(req,cb) {
+    //var data = JSON.parse(packet.payload.toString());
+    //console.log(req.url);
+    //req.url
+    console.log('STORE DATA',req.data)
+    dbCache[req.params[0]] = JSON.parse(req.data);
+    console.log(req.params);
+    cb({"ok":true});
+});
+
+baseServer.addApiHandler("load",function(req,cb){
+    var obj = dbCache[req.params[0]];
+    cb(obj?obj:{});
+});
 
 // Use connect method to connect to the Server 
-MongoClient.connect(settings.mongoPersistanceUrl, function(err, db) {
+//MongoClient.connect(settings.mongoPersistanceUrl, function(err, db) {
 
 
-    var server = new mosca.Server(settings.mqttSettings);
+    // var server = new mosca.Server(settings.mqttSettings);
+    // server.attachHttpServer(httpServ);
+    
+    // httpServ.listen(3000);
 
     // fired when a message is received
-    server.on('published', function(packet, client) {
-        //packet.topic
-        //console.log('got',packet.topic);
-        for(var topic in topicFunctions) {
-            //console.log(settings.baseTopic+topic);
-            if (String(settings.baseTopic+topic)==String(packet.topic)) {
-                console.log('found func',topic);
-                topicFunctions[topic](packet,client,server);
-            }
-        }
-    });
 
-    server.on('clientConnected', function(client) {
-        console.log('client connected', client.id);
-        
-    });
-
-    server.on('clientDisconnected',function(client) {
-        console.log('client disconnected', client.id);
-    });
-
-    
-
-    server.on('ready', function(){
-        console.log('Waiting for connections');
-    });
    
 
     //console.log("Connected correctly to server");
     //db.close();
-});
+//});
