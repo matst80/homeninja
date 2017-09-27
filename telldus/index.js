@@ -1,8 +1,7 @@
 
 var telldus = require('telldus');
 var settings = require("./settings");
-//var client  = mqtt.connect('mqtt://10.10.10.181');
-var homeninja = require("homeninja-nodehelper").init(settings);
+var homeninja = require("../nodehelper/nodehelper").init(settings);
 
 var alldevices = [];
 

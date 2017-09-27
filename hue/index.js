@@ -2,7 +2,7 @@
 var hue = require("node-hue-api");
 var settings = require("./settings");
 //var client  = mqtt.connect('mqtt://10.10.10.181');
-var homeninja = require("./nodehelper").init(settings);
+var homeninja = require("../nodehelper/nodehelper").init(settings);
 
 var baseApi = new hue.HueApi();
 var bridges = settings.bridges;
