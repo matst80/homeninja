@@ -3,6 +3,31 @@ var mosca = require('mosca');
 var extend = require('node.extend');
 var MongoClient = require('mongodb').MongoClient;
 
+var Server = require('node-ssdp').Server,
+    server = new Server();
+
+settings.usn.forEach(function(usn) {
+    server.addUSN(usn);
+});
+
+server.on('advertise-alive', function (headers) {
+// Expire old devices from your cache.
+// Register advertising device somewhere (as designated in http headers heads)
+    console.log('alive',headers);
+});
+
+server.on('advertise-bye', function (headers) {
+// Remove specified device from cache.
+    console.log('bye',headers);
+});
+
+// start the server
+server.start();
+
+process.on('exit', function(){
+    server.stop() // advertise shutting down and stop listening
+})
+
 var baseNode = {
     clientId: '',
     topic:'',
@@ -16,6 +41,10 @@ var states = {
 };
 
 var connectedNodes = {};
+
+function saveStates() {
+
+}
 
 function parsePacket(packet) {
     var ret = [];
@@ -88,11 +117,19 @@ var topicFunctions = {
         },function(){
             console.log('init packet sent');
         });
+    },
+    "save":function(packet,client) {
+        var data = JSON.parse(packet.payload.toString());
+        console.log('saving',data);
+    },
+    "load":function(packet,client){
+        console.log('load');
     }
 };
 
 // Use connect method to connect to the Server 
 MongoClient.connect(settings.mongoPersistanceUrl, function(err, db) {
+
 
     var server = new mosca.Server(settings.mqttSettings);
 

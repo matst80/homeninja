@@ -1,19 +1,71 @@
 <html>
     <head>
       <script src="/mqtt.js"></script>
+      <style>
+          body {
+              display: flex;
+          }
+          .node {
+            flex-basis: 150px;
+            display: flex;
+            margin:10px;
+            padding:10px;
+            background-color: #ccc;
+          }
+          #items {
+              clear: both;
+          }
+      </style>
     </head>
     <body>
         <h1>Hoho</h1>
-        <ul id="evts"></ul>
+        <div id="items"></div>
+        <textarea id="evts"></textarea>
       <script>
         var client = mqtt.connect();
         client.subscribe("homeninja/clientadded");
-        var prt = document.getElementById('evts');
+        client.subscribe("homeninja/notify");
+        var items = {};
+        var evts = document.getElementById('evts');
+        var itemParent = document.getElementById('items');
+
+        function createOrUpdate(item) {
+            var id = item.topic.replace('/','');
+            var elm = document.getElementById(item.topic);
+            console.log('found',elm);
+            if (!elm)
+            {
+                elm = document.createElement('div');
+                elm.addEventListener('click',function() {
+                    console.log('click',item);
+                },true);
+                elm.className = 'node';
+                elm.id = item.topic;
+                elm.innerHTML = item.name;
+                itemParent.appendChild(elm);
+            }
+        }
+
+        function parseStates(s) {
+            for(i in s) {
+                var item = s[i];
+                console.log(item);
+                createOrUpdate(item);
+            }
+        }
+
         client.on("message", function(topic, payload) {
-          var li = document.createElement('li');
-          li.innerHTML = '<span>'+([topic, payload].join(": "))+'</span>';
-          prt.appendChild(li);
-          //client.end();
+            if (topic=="homeninja/clientadded") {
+                console.log('client added',payload);
+                evts.value+=([topic, payload].join(": "))+'\n';
+                var obj = JSON.parse(payload);
+                parseStates(obj.nodes);
+                console.log(obj);
+            }
+            else if (topic=="homeninja/notify"){
+                alert(payload);
+            }
+            
         });
 
         var serverNode = {
