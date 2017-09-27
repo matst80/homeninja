@@ -1,0 +1,14 @@
+{
+  "name": "homeninja-nodehelper",
+  "version": "1.0.0",
+  "description": "Helper class to develop plugin to homeninja",
+  "main": "nodehelper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^2.13.0"
+  }
+}
