@@ -80,9 +80,9 @@ function parseNodes(data,clientid) {
 
 baseServer.addTopicHandler("init",function(packet,client) {
     var data = parsePacket(packet);
-    console.log('preinit',data,String(client.id));
+    console.log('preinit',client.id);
     if (data && data.length)
-        parseNodes(data,client.id);
+        parseNodes(data,String(client.id));
 
     console.log('init',states);
 
@@ -97,12 +97,9 @@ baseServer.addTopicHandler("init",function(packet,client) {
 });
 
 baseServer.addApiHandler("save", function(req,cb) {
-    //var data = JSON.parse(packet.payload.toString());
-    //console.log(req.url);
-    //req.url
-    console.log('STORE DATA',req.data)
+    
     dbCache[req.params[0]] = JSON.parse(req.data);
-    console.log(req.params);
+    //console.log(req.params);
     cb({"ok":true});
 });
 
@@ -110,20 +107,3 @@ baseServer.addApiHandler("load",function(req,cb){
     var obj = dbCache[req.params[0]];
     cb(obj?obj:{});
 });
-
-// Use connect method to connect to the Server 
-//MongoClient.connect(settings.mongoPersistanceUrl, function(err, db) {
-
-
-    // var server = new mosca.Server(settings.mqttSettings);
-    // server.attachHttpServer(httpServ);
-    
-    // httpServ.listen(3000);
-
-    // fired when a message is received
-
-   
-
-    //console.log("Connected correctly to server");
-    //db.close();
-//});
