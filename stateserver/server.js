@@ -5,7 +5,6 @@ var MongoClient = require('mongodb').MongoClient;
 
 var baseServer = require('./baseserver')(settings);
 
-//var http     = require('http'), 
 var dbCache = {};
 
 var baseNode = {
