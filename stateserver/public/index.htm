@@ -12,6 +12,10 @@
             padding:10px;
             background-color: #ccc;
           }
+          div.off {
+              background: #000;
+              color:#fff;
+          }
           #items {
               clear: both;
           }
@@ -36,10 +40,19 @@
             if (!elm)
             {
                 elm = document.createElement('div');
+                
                 elm.addEventListener('click',function() {
+                    var state = this.classList.contains('off');
                     console.log('click',item);
+                    if (state) {
+                        this.classList.remove('off');
+                    }
+                    else
+                        this.classList.add('off');
+                        client.publish(item.topic+"/state",state?"on":"off");
+                    
                 },true);
-                elm.className = 'node';
+                elm.className = 'node off';
                 elm.id = item.topic;
                 elm.innerHTML = item.name;
                 itemParent.appendChild(elm);
