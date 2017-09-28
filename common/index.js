@@ -23,7 +23,7 @@ module.exports = {
     },
     findNode: function(topic,nodes,cb) {
         nodes.forEach(function(n){
-            if (topic.startWith(n.topic+'/')) {
+            if (topic.startsWith(n.topic+'/')) {
                 cb(n);
             }
         });

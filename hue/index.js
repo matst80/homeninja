@@ -39,7 +39,8 @@ homeninja.client.on('message', function (topic, msg) {
     console.log(topic,message);
     for(bridgeId in bridges) {
         var bridge = bridges[bridgeId];
-        common.findNode(function(node) {
+        //console.log('nodes',bridge.devices);
+        common.findNode(topic,bridge.devices,function(node) {
             let api = getApi(bridge);
             let level = message-0;
             state = lightState.create();
@@ -49,9 +50,11 @@ homeninja.client.on('message', function (topic, msg) {
             else {
                 state = (message=='on')?state.on():state.off();
             }
+            console.log('set state',node,state);
             api.setLightState(node.hueid, state, function(err, result) {
                 if (err) throw err;
-                homeninja.sendState(node,state);
+                console.log('state is SET');
+                homeninja.sendState(node,message);
             });
         });
     }

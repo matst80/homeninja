@@ -56,7 +56,7 @@ module.exports = {
             },
             sendNodes: function(nodes) {
                 console.log('sending nodes: ',nodes.length);
-                client.publish(baseTopic+'init',JSON.stringify(nodes));
+                client.publish(baseTopic+'init',new Buffer(JSON.stringify(nodes)));
             },
             sendNotification: function(data) {
                 client.publish(baseTopic+'notify',data);
