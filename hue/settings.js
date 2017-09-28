@@ -1,9 +1,10 @@
 module.exports = {
     server:'10.10.10.181',
+    baseTopic:'homehue/',
     bridgeConfigKey:'hue-node-bridges',
     bridges: {
         "001788fffe2985e3":{
-            username:"xKCxCbDXXbSY341YTVXyb9oVSmN64X1amQxB5n6o",
+            username:"pQd2VpM-O7lObKo7u7K7cjfQQu21eZnCFCsdX3qX",
             ip: '10.10.10.116'
         }
     }
