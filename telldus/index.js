@@ -10,7 +10,7 @@ function getNodes() {
     telldus.getDevices(function(err,devices) {
         if (err)
             throw err;
-            nodes = devices.map(function(v) {
+        nodes = devices.map(function(v) {
             return { 
                 tdid:v.id,
                 name:v.name,
@@ -21,7 +21,10 @@ function getNodes() {
         homeninja.sendNodes(nodes);
     });
     telldus.getSensors(function(err,sensors) {
-        console.log(sensors);
+        sensors.map(function(v) {
+            console.log(v);
+            homeninja.client.publish('telldus/sensor',JSON.stringify(v));
+        });
     });
 }
 
@@ -39,7 +42,7 @@ homeninja.on('connect',function() {
     homeninja.client.subscribe("telldus/+/set");
     var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
         console.log('Raw device event: ' + data);
-        homeninja.client.publish('telldus/raw',toObj(data));
+        homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
     });
 });
  
