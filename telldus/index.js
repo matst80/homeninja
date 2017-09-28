@@ -10,15 +10,15 @@ function getNodes() {
     telldus.getDevices(function(err,devices) {
         if (err)
             throw err;
-        nodes = devices.map(function(v) {
+        homeninja.sendNodes(devices.map(function(v) {
+            console.log(v);
             return { 
-                tdid:v.id,
-                name:v.name,
-                features:v.methods,
+                tdid: v.id,
+                name: v.name,
+                features: v.methods,
                 topic:"telldus/conf"+v.id
             };
-        });
-        homeninja.sendNodes(nodes);
+        }));
     });
     telldus.getSensors(function(err,sensors) {
         sensors.map(function(v) {
@@ -32,7 +32,9 @@ function toObj(data) {
     var ret = {};
     data.split(';').map(function(kv) {
         var pp = kv.split(':');
-        ret[pp[0]] = pp[1]||'';
+        if (pp.length>0) {
+            ret[pp[0]] = pp[1]||'';
+        }
     });
     return ret;
 }
