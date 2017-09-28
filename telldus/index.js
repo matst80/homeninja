@@ -7,7 +7,7 @@ var alldevices = [];
 
 function getNodes() {
     telldus.getDevices(function(err,devices) {
-             var alldevices = [];
+             alldevices = [];
      
      
              if ( err ) {
@@ -34,24 +34,35 @@ function getNodes() {
                  }
                  console.log('found',alldevices.length);
                  homeninja.sendNodes(alldevices);
+		 console.log('sent');
              }
          });
 }
 
 homeninja.on('connect',function() {
     getNodes();
+    homeninja.client.subscribe("telldus/+/+");
 });
  
 homeninja.client.on('message', function (topic, message) {
   // message is Buffer
   console.log(topic,message.toString());
-    alldevices.forEach(function(node){
-        if (topic==node.topic)
+    alldevices.forEach(function(node) {
+	
+        if (topic.startsWith(node.topic))
         {
-            console.log('found node');
-            telldus.turnOn(node.tdid,function(err) {
+            console.log('found node',message);
+	    var on = (message=="on");
+            if (on) {
+	    telldus.turnOn(node.tdid,function(err) {
                 console.log('deviceId is now ON');
               });
+	   }else{
+	    telldus.turnOff(node.tdid,function(err) {
+                console.log('deviceId is now OFF');
+              });
+	   }
+
         }
     });
   //client.end()
