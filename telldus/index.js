@@ -32,7 +32,7 @@ function getNodes() {
 
 homeninja.on('connect',function() {
     getNodes();
-    homeninja.client.subscribe("telldus/+/+");
+    homeninja.client.subscribe("telldus/+/state");
 });
  
 homeninja.client.on('message', function (topic, msg) {

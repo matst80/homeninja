@@ -27,7 +27,7 @@ homeninja.on('connect',function() {
             });
         });
     });
-    homeninja.client.subscribe('homehue/+/+/+');
+    homeninja.client.subscribe('homehue/+/+/set');
 });
 
 function getApi(bridge) {
@@ -53,15 +53,15 @@ homeninja.client.on('message', function (topic, msg) {
                 var level = message-0;
                 state = lightState.create();
                 if (message==level) {
-
+                    state = state.on().brightness(level);
                 }
                 else {
-                    var newstate = message=='on';
-                    api.setLightState(node.hueid, newstate?state.on():state.off(), function(err, result) {
-                        if (err) throw err;
-                        console.log(result);
-                    });
+                    state = (message=='on')?state.on():state.off();
                 }
+                api.setLightState(node.hueid, state, function(err, result) {
+                    if (err) throw err;
+                    homeninja.client.publish(node.topic+'state',state);
+                });
             };
         }
     }
