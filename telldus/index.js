@@ -10,7 +10,6 @@ function getNodes() {
         if (err)
             throw err;
         homeninja.sendNodes(devices.map(function(v) {
-            console.log(v);
             return { 
                 tdid: v.id,
                 name: v.name,
@@ -22,7 +21,7 @@ function getNodes() {
     });
     telldus.getSensors(function(err,sensors) {
         sensors.map(function(v) {
-            console.log(v);
+            //console.log(v);
             homeninja.client.publish('telldus/sensor',JSON.stringify(v));
         });
     });

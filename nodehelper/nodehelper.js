@@ -55,6 +55,7 @@ module.exports = {
                 });
             },
             sendNodes: function(nodes) {
+                console.log('sending nodes: ',nodes.length);
                 client.publish(baseTopic+'init',JSON.stringify(nodes));
             },
             sendNotification: function(data) {
