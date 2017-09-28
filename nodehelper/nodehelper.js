@@ -72,8 +72,9 @@ module.exports = {
                     data:JSON.stringify(data)
                 },cb);
             },
-            sendState: function(data) {
-
+            sendState: function(node, state) {
+                node.state = state;
+                client.publish(node.topic+'/state',state);
             }
         };
         return ret;
