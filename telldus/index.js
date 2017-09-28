@@ -1,4 +1,3 @@
-
 var telldus = require('telldus');
 var settings = require("./settings");
 var homeninja = require("../nodehelper/nodehelper").init(settings);
@@ -15,8 +14,9 @@ function getNodes() {
             return { 
                 tdid: v.id,
                 name: v.name,
-                features: v.methods,
-                topic:"telldus/conf"+v.id
+                state: v.status,
+                features: ['onoff'],
+                topic: "telldus/conf"+v.id
             };
         }));
     });
