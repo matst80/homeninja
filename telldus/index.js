@@ -32,7 +32,7 @@ function toObj(data) {
     var ret = {};
     data.split(';').map(function(kv) {
         var pp = kv.split(':');
-        ret[pp[0]] = pp[1];
+        ret[pp[0]] = pp[1]||'';
     });
     return ret;
 }
