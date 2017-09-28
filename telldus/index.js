@@ -32,7 +32,7 @@ function getNodes() {
 
 homeninja.on('connect',function() {
     getNodes();
-    homeninja.client.subscribe("telldus/+/state");
+    homeninja.client.subscribe("telldus/+/set");
 });
  
 homeninja.client.on('message', function (topic, msg) {
@@ -44,17 +44,11 @@ homeninja.client.on('message', function (topic, msg) {
         if (topic.startsWith(node.topic))
         {
             console.log('found node',message);
-	        var on = (message=="on");
-            if (on) {
-	            telldus.turnOn(node.tdid,function(err) {
-                    console.log('deviceId is now ON');
-                });
-            }
-            else {
-                telldus.turnOff(node.tdid,function(err) {
-                    console.log('deviceId is now OFF');
-                });
-            }
+            var on = (message=="on");
+            telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
+                console.log('deviceId is now ON');
+                homeninja.client.publish(node.topic+'/state',message);
+            });
         }
     });
 });
