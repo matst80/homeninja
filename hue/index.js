@@ -1,11 +1,10 @@
-//var mqtt = require('mqtt');
 var hue = require("node-hue-api");
 var settings = require("./settings");
-//var client  = mqtt.connect('mqtt://10.10.10.181');
 var homeninja = require("../nodehelper/nodehelper").init(settings);
-
+var lightState = hue.lightState;
 var baseApi = new hue.HueApi();
 var bridges = settings.bridges;
+var apiCache = {};
 
 function isEmptyObject(obj) {
     for(var prop in obj) {
@@ -17,18 +16,55 @@ function isEmptyObject(obj) {
   }
 
 homeninja.on('connect',function() {
-    //console.log('connected',homeninja);
     homeninja.load(settings.bridgeConfigKey,function(data) {
-        //console.log('got data',data,data);
         if (!isEmptyObject(data))
             bridges = data;
+        
         findBridges(function() {
-            console.log('bridge found, save');
+            console.log('bridge found, saving');
             homeninja.save(settings.bridgeConfigKey,bridges,function(d){
                 console.log(d);
             });
         });
-    }); 
+    });
+    homeninja.client.subscribe('homehue/+/+/+');
+});
+
+function getApi(bridge) {
+    var api = apiCache[bridge.id];
+    if (!api) {
+        console.log('init new api',bridge.ip);
+        api = new hue.HueApi(bridge.ip, bridge.username);
+    }
+    apiCache[bridge.id] = api;
+    return api;
+}
+
+homeninja.client.on('message', function (topic, msg) {
+    // message is Buffer
+    var message = msg.toString();
+    console.log(topic,message);
+    for(bridgeId in bridges) {
+        var bridge = bridges[bridgeId];
+        for(var nodeIdx in bridge.nodes) {
+            var node = bridge.nodes[nodeIdx];
+            if (topic.startsWith(node.topic)) {
+                var api = getApi(bridge);
+                var level = message-0;
+                state = lightState.create();
+                if (message==level) {
+
+                }
+                else {
+                    var newstate = message=='on';
+                    api.setLightState(node.hueid, newstate?state.on():state.off(), function(err, result) {
+                        if (err) throw err;
+                        console.log(result);
+                    });
+                }
+            };
+        }
+    }
 });
 
 function notifyError(err) {
@@ -38,11 +74,7 @@ function notifyError(err) {
 };
 
 function findBridges(onBridgeFound) {
-
-
     hue.nupnpSearch().then(function(bridge) {
-        
-
         bridge.forEach(function(b) {
             console.log('Found bridge:',b.ipaddress);
             if (!bridges[b.id]) {
@@ -62,25 +94,16 @@ function findBridges(onBridgeFound) {
                     })
                     .fail(notifyError)
                     .done();
-                //api.config().then(displayResult).done();
-                
             }
             else {
                 console.log('found configured bridge');
                 var oldbridge = bridges[b.id];
                 var newdevices = [];
                 oldbridge.ip = b.ipaddress;
-                let newapi = new hue.HueApi(b.ipaddress, oldbridge.username);
-                // newapi.config(function(err, config) {
-                //     if (err) throw err;
-                //     //console.log(config);
-                //     oldbridge.config = config;
-                // });
-                newapi.fullState(function(err, config) {
+                getApi(oldbridge).fullState(function(err, config) {
                     if (err) throw err;
                     var lst = config.lights;
-                    //oldbridge.states = config.states;
-                    //console.log(config.lights);
+                    
                     for(var lightid in lst) {
                         var v = lst[lightid];
                         //console.log(v);
@@ -91,10 +114,11 @@ function findBridges(onBridgeFound) {
                             state: v.state,
                             name: v.name,
                             features: [v.type],
-                            topic: 'homehue/'+lightid
+                            topic: 'homehue/'+b.id+'/'+lightid
                         };
                         //console.log('row created',row);
                         newdevices.push(row);
+                        
                     }
                     oldbridge.nodes = newdevices;
                     bridges[b.id] = oldbridge;
@@ -103,24 +127,9 @@ function findBridges(onBridgeFound) {
                     console.log('found',newdevices.length,', sent');
                     if (onBridgeFound)
                         onBridgeFound(oldbridge);
-                    
-                    /*client.publish('homeninja/init',String(JSON.stringify(newdevices)),{},function() {
-                        console.log('sent');
-                    });
-                    */
-
                 });
-                //apis[b.id] = newapi;
             }
             
         }, this)}
-).done();
-
-var displayUserResult = function(result) {
-    console.log("Created user: " + JSON.stringify(result));
-};
-
- 
-
-
+    ).done();
 }

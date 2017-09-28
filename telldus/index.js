@@ -25,7 +25,7 @@ function getNodes() {
             }
             console.log('found',alldevices.length);
             homeninja.sendNodes(alldevices);
-		    console.log('sent');
+		    console.log('sent'); 
         }
     });
 }
