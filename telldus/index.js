@@ -9,7 +9,7 @@ function getNodes() {
     telldus.getDevices(function(err,devices) {
         if (err)
            throw err;
-        homeninja.sendNodes(devices.map(function(v) {
+        nodes = homeninja.sendNodes(devices.map(function(v) {
             return {
                 tdid: v.id,
                 name: v.name,
@@ -52,10 +52,10 @@ homeninja.on('connect',function() {
 homeninja.client.on('message', function (topic, msg) {
     // message is Buffer
     var message = msg.toString();
-    console.log(topic,message);
+    console.log(topic,message,nodes);
     common.findNode(topic,nodes,function(node) {
-        var on = (message=="on");
-        console.log('turning',node,message);
+        console.log('turning',node,message);        
+	var on = (message=="on");
 	telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
             console.log('deviceId is now ',message);
             homeninja.client.publish(node.topic+'/state',message);
