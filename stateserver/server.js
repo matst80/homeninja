@@ -102,6 +102,31 @@ baseServer.addApiHandler("save", function(req,cb) {
     cb({"ok":true});
 });
 
+function toArray(obj) {
+    var ret = [];
+    for(i in obj) {
+        ret.push(obj[i]);
+    }
+    return ret;
+}
+
+baseServer.addApiHandler("node", function(req,cb) {
+    
+    cb(toArray(states.nodes));
+});
+
+baseServer.addApiHandler("sendstate", function(req,cb) {
+    var data = JSON.parse(req.data);
+    baseServer.mqttServer.publish({
+        topic:data.topic,
+        payload:data.state,
+        qos: 0, // 0, 1, or 2
+        retain: false // or true
+    },function(){
+        cb(true);
+    });
+});
+
 baseServer.addApiHandler("load",function(req,cb){
     var obj = dbCache[req.params[0]];
     cb(obj?obj:{});
