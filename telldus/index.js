@@ -5,28 +5,64 @@ var common = require("../common/index");
 
 var nodes = [];
 
+var tempTimeout;
+
+function getState(tddata) {
+    var ret = 'off';
+    if (tddata && tddata.name)
+        ret = tddata.name=='ON'?'on':'off';
+}
+
+function getSensors() {
+    telldus.getSensors(function(err,sensors) {
+        homeninja.sendNodes(sensors.map(function(v) {
+            
+            console.log(v);
+            homeninja.client.publish('telldus/sensor',JSON.stringify(v));
+            return {
+                topic: "telldus/sens"+v.id,
+                type: 'temp',
+                name: 'temp'+v.id+': '+v.data[0].value,
+                features: ['temp','hum'],
+                state: {
+                    temp:v.data[0].value,
+                    hum:v.data[1].value
+                }
+            };
+        }));
+        tempTimeout = setTimeout(function() {
+            getSensors();
+        }, settings.tempInterval||10000);
+    });
+}
+
 function getNodes() {
     
     telldus.getDevices(function(err,devices) {
         if (err)
         throw err;
         nodes = homeninja.sendNodes(devices.map(function(v) {
+            var features = ['onoff'];
+            if (v.methods.indexOf('LEARN')!=-1)
+                features.push('learn');
+            if (v.methods.indexOf('DIMMER')!=-1)
+                features.push('bright');
+            console.log(v);
             return {
                 tdid: v.id,
                 name: v.name,
-                state: v.status,
-                features: ['onoff'],
+                state: getState(v.status),
+                features: features,
                 topic: "telldus/conf"+v.id
             };
         }));
+        if (tempTimeout)
+            clearTimeout(tempTimeout);
+        getSensors();
+        
     });
     
-    telldus.getSensors(function(err,sensors) {
-        sensors.map(function(v) {
-            console.log(v);
-            homeninja.client.publish('telldus/sensor',JSON.stringify(v));
-        });
-    });
+    
 }
 
 function toObj(data) {
