@@ -6,9 +6,10 @@ var common = require("../common/index");
 var nodes = [];
 
 function getNodes() {
+    
     telldus.getDevices(function(err,devices) {
         if (err)
-           throw err;
+        throw err;
         nodes = homeninja.sendNodes(devices.map(function(v) {
             return {
                 tdid: v.id,
@@ -19,6 +20,7 @@ function getNodes() {
             };
         }));
     });
+    
     telldus.getSensors(function(err,sensors) {
         sensors.map(function(v) {
             console.log(v);
