@@ -33,7 +33,7 @@ module.exports = {
                 connected = true;
                 console.log('connected..');
                 eventEmitter.emit('connect');
-            },settings.connetionDelay||200)
+            },settings.connectionDelay||500)
         });
         client.on('disconnect', function () {
             connected = true;
