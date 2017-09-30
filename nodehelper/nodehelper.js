@@ -29,9 +29,11 @@ module.exports = {
         var client = mqtt.connect('mqtt://'+settings.server);
         client.subscribe('');
         client.on('connect', function () {
-            connected = true;
-            console.log('connected..');
-            eventEmitter.emit('connect');
+            setTimeout(function() {
+                connected = true;
+                console.log('connected..');
+                eventEmitter.emit('connect');
+            },settings.connetionDelay||200)
         });
         client.on('disconnect', function () {
             connected = true;

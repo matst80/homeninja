@@ -38,11 +38,9 @@ function toObj(data) {
     return ret;
 }
 
-homeninja.on('connect',function() {
-    setTimeout(function () {
-	    getNodes();
- 	    homeninja.client.subscribe("telldus/+/set")
-    },700);
+homeninja.on('connect',function() {    
+    getNodes();
+    homeninja.client.subscribe("telldus/+/set");
     var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
         console.log('Raw device event: ' + data);
         homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
