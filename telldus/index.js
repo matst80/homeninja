@@ -8,9 +8,9 @@ var nodes = [];
 function getNodes() {
     telldus.getDevices(function(err,devices) {
         if (err)
-            throw err;
+           throw err;
         homeninja.sendNodes(devices.map(function(v) {
-            return { 
+            return {
                 tdid: v.id,
                 name: v.name,
                 state: v.status,
@@ -39,22 +39,25 @@ function toObj(data) {
 }
 
 homeninja.on('connect',function() {
-    getNodes();
-    homeninja.client.subscribe("telldus/+/set");
+    setTimeout(function () {
+	getNodes();
+ 	homeninja.client.subscribe("telldus/+/set")
+    },700);
     var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
         console.log('Raw device event: ' + data);
         homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
     });
 });
- 
+
 homeninja.client.on('message', function (topic, msg) {
     // message is Buffer
     var message = msg.toString();
     console.log(topic,message);
     common.findNode(topic,nodes,function(node) {
         var on = (message=="on");
-        telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
-            console.log('deviceId is now ON');
+        console.log('turning',node,message);
+	telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
+            console.log('deviceId is now ',message);
             homeninja.client.publish(node.topic+'/state',message);
         });
     });
