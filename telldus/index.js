@@ -6,10 +6,11 @@ var common = require("../common/index");
 var nodes = [];
 
 function getNodes() {
+    
     telldus.getDevices(function(err,devices) {
         if (err)
-           throw err;
-        homeninja.sendNodes(devices.map(function(v) {
+        throw err;
+        nodes = homeninja.sendNodes(devices.map(function(v) {
             return {
                 tdid: v.id,
                 name: v.name,
@@ -19,6 +20,7 @@ function getNodes() {
             };
         }));
     });
+    
     telldus.getSensors(function(err,sensors) {
         sensors.map(function(v) {
             console.log(v);
@@ -38,11 +40,9 @@ function toObj(data) {
     return ret;
 }
 
-homeninja.on('connect',function() {
-    setTimeout(function () {
-	    getNodes();
- 	    homeninja.client.subscribe("telldus/+/set")
-    },700);
+homeninja.on('connect',function() {    
+    getNodes();
+    homeninja.client.subscribe("telldus/+/set");
     var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
         console.log('Raw device event: ' + data);
         homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
@@ -52,10 +52,10 @@ homeninja.on('connect',function() {
 homeninja.client.on('message', function (topic, msg) {
     // message is Buffer
     var message = msg.toString();
-    console.log(topic,message);
+    console.log(topic,message,nodes);
     common.findNode(topic,nodes,function(node) {
-        var on = (message=="on");
-        console.log('turning',node,message);
+        console.log('turning',node,message);        
+	var on = (message=="on");
 	telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
             console.log('deviceId is now ',message);
             homeninja.client.publish(node.topic+'/state',message);

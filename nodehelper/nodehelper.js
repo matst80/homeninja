@@ -29,9 +29,11 @@ module.exports = {
         var client = mqtt.connect('mqtt://'+settings.server);
         client.subscribe('');
         client.on('connect', function () {
-            connected = true;
-            console.log('connected..');
-            eventEmitter.emit('connect');
+            setTimeout(function() {
+                connected = true;
+                console.log('connected..');
+                eventEmitter.emit('connect');
+            },settings.connectionDelay||500)
         });
         client.on('disconnect', function () {
             connected = true;
@@ -56,8 +58,11 @@ module.exports = {
             },
             sendNodes: function(nodes) {
                 console.log('sending nodes: ',nodes.length);
-                client.publish(baseTopic+'init',new Buffer(JSON.stringify(nodes)));
-            },
+                client.publish(baseTopic+'init',new Buffer(JSON.stringify(nodes)),function() {
+                    console.log('done sending',arguments);
+                });
+                return nodes;
+	        },
             sendNotification: function(data) {
                 client.publish(baseTopic+'notify',data);
             },
