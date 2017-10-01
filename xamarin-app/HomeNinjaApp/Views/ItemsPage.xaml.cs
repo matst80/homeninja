@@ -16,6 +16,8 @@ namespace HomeNinjaApp
             InitializeComponent();
 
             BindingContext = viewModel = new ItemsViewModel();
+
+            //MyItems.
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
