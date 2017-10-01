@@ -8,12 +8,20 @@ namespace HomeNinjaApp.ViewLoader
     {
         //LoaderViewModel viewModel;
 
-        public Node ItemNode { get; set; }
+        private Node itemNode { get; set; }
 
         public ViewLoader()
         {
             Content = new Label { Text = "Hello ContentView" };
-            //BindingContext = viewModel = new LoaderViewModel();
+
+        }
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            itemNode = BindingContext as Node;
+            var lbl = Content as Label;
+            lbl.Text = itemNode.Text;
         }
     }
 }
