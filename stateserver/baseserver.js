@@ -3,16 +3,16 @@ var url = require('url');
 var path = require('path');
 var fs = require('fs');
 var http = require('http');
-
+var ws = require('websocket').server;
 const map = require('./mimemap');
-
+var wsServer;
 var apiUrl = '/api/';
 
 var apiFunctions = {};
 var topicFunctions = {};
 
 function createHttpServer() {
-    return http.createServer(function (req, res) {
+    var ret = http.createServer(function (req, res) {
         var lurl = req.url.toLocaleLowerCase();
         if (lurl=='/')
             lurl = '/index.htm';
@@ -31,7 +31,7 @@ function createHttpServer() {
                     });
                 } 
                 if (req.method=="GET")
-                     process('');
+                        process('');
                 else {
                     let body = [];
                     req.on('data', function(chunk) {
@@ -47,39 +47,59 @@ function createHttpServer() {
         
         
         const parsedUrl = url.parse(lurl);
-       
+        
         let pathname = './public'+parsedUrl.pathname;
         
         const ext = path.parse(pathname).ext;
         
         
-      
+        
         fs.exists(pathname, function (exist) {
-          if(!exist) {
+            if(!exist) {
             // if the file is not found, return 404
             res.statusCode = 404;
             res.end('File ${pathname} not found!');
             return;
-          }
-      
-          // if is a directory search for index file matching the extention
-          if (fs.statSync(pathname).isDirectory()) pathname += '/index' + ext;
-      
-          // read file from file system
-          fs.readFile(pathname, function(err, data){
-            if(err){
-              res.statusCode = 500;
-              res.end('Error getting the file: ${err}.');
-            } else {
-              // if the file is found, set Content-type and send data
-              res.setHeader('Content-type', map[ext] || 'text/plain' );
-              res.end(data);
             }
-          });
+        
+            // if is a directory search for index file matching the extention
+            if (fs.statSync(pathname).isDirectory()) pathname += '/index' + ext;
+        
+            // read file from file system
+            fs.readFile(pathname, function(err, data){
+            if(err){
+                res.statusCode = 500;
+                res.end('Error getting the file: ${err}.');
+            } else {
+                // if the file is found, set Content-type and send data
+                res.setHeader('Content-type', map[ext] || 'text/plain' );
+                res.end(data);
+            }
+            });
+        });    
+    });
+    /*wsServer = new ws({
+        httpServer: ret,
+        autoAcceptConnections: true
+    });
+    wsServer.on('request', function(request) {
+        var connection = request.accept('echo-protocol', request.origin);
+        console.log((new Date()) + ' Connection accepted.');
+        connection.on('message', function(message) {
+            if (message.type === 'utf8') {
+                console.log('Received Message: ' + message.utf8Data);
+                connection.sendUTF(message.utf8Data);
+            }
+            else if (message.type === 'binary') {
+                console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+                connection.sendBytes(message.binaryData);
+            }
         });
-      
-      
-      });
+        connection.on('close', function(reasonCode, description) {
+            console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        });
+    });*/
+    return ret;
 }
 
 module.exports = function(settings) {

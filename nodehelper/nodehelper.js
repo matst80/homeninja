@@ -27,7 +27,6 @@ function apiRequest(opt,cb) {
 module.exports = {
     init:function(settings) {
         var client = mqtt.connect('mqtt://'+settings.server+(settings.serverPort?(':'+settings.serverPort):''));
-        client.subscribe('');
         client.on('connect', function () {
             setTimeout(function() {
                 connected = true;
