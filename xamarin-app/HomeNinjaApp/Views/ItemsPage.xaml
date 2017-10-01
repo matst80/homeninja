@@ -10,17 +10,6 @@
 	<ContentPage.Content>
 		<StackLayout x:Name="MyItems">
 			<ListView x:Name="ItemsListView" ItemsSource="{Binding Items}" VerticalOptions="FillAndExpand" HasUnevenRows="true" RefreshCommand="{Binding LoadItemsCommand}" IsPullToRefreshEnabled="true" IsRefreshing="{Binding IsBusy, Mode=OneWay}" CachingStrategy="RecycleElement" ItemSelected="OnItemSelected">
-				<ListView.ItemTemplate>
-					<DataTemplate>
-						<ViewCell>
-                           <StackLayout Padding="10">
-                                <local:ViewLoader></local:ViewLoader>
-                                <Label Text="{Binding Text}" LineBreakMode="NoWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="16" />
-                                <Label Text="{Binding Description}" LineBreakMode="NoWrap" Style="{DynamicResource ListItemDetailTextStyle}" FontSize="13" />
-                            </StackLayout>
-                        </ViewCell>
-					</DataTemplate>
-				</ListView.ItemTemplate>
 			</ListView>
 		</StackLayout>
 	</ContentPage.Content>

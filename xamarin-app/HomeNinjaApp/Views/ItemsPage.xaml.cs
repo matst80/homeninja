@@ -16,6 +16,7 @@ namespace HomeNinjaApp
             InitializeComponent();
 
             BindingContext = viewModel = new ItemsViewModel();
+            this.ItemsListView.ItemTemplate = new DataTemplate(typeof(HomeNinjaApp.ViewLoader.ViewLoader));
 
             //MyItems.
         }
@@ -25,17 +26,8 @@ namespace HomeNinjaApp
             var item = args.SelectedItem as Node;
             if (item == null)
                 return;
-            var client = new HttpClient();
-            client.BaseAddress = new Uri($"{App.BackendUrl}/");
-            item.BoolState = !item.BoolState;
-            var state = new SendState()
-            {
-                Topic = item.Topic+"/set",
-                State = item.BoolState?"on":"off"
-            };
-            var serializedItem = JsonConvert.SerializeObject(state);
-            var response = await client.PostAsync($"api/sendstate", new StringContent(serializedItem, System.Text.Encoding.UTF8, "application/json"));
-            //await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
+            
+            await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
 
             // Manually deselect item
             ItemsListView.SelectedItem = null;
