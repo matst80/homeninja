@@ -1,6 +1,7 @@
 module.exports = {
     server:'10.10.10.1',
-    serverPort:1884,
+    serverPort:3000,
+    mqttPort:1884,
     baseTopic:'homehue/',
     bridgeConfigKey:'hue-node-bridges',
     bridges: {

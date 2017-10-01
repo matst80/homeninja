@@ -26,7 +26,8 @@ function apiRequest(opt,cb) {
 
 module.exports = {
     init:function(settings) {
-        var client = mqtt.connect('mqtt://'+settings.server+(settings.serverPort?(':'+settings.serverPort):''));
+        console.log('preocnnect',settings.server);
+        var client = mqtt.connect('mqtt://'+settings.server+(settings.mqttPort?(':'+settings.mqttPort):''));
         client.on('connect', function () {
             setTimeout(function() {
                 connected = true;
@@ -47,7 +48,7 @@ module.exports = {
             client: client,
             load: function(key,cb) {
                 apiRequest({
-                    hostname:settings.settings,
+                    hostname:settings.server,
                     port:settings.serverPort||3000,
                     path:'/api/load/'+key,
                     method: 'GET'
@@ -70,7 +71,7 @@ module.exports = {
             },
             save: function(key,data,cb) {
                 apiRequest({
-                    hostname:settings.settings,
+                    hostname:settings.server,
                     port:settings.serverPort||3000,
                     path:'/api/save/'+key,
                     method: 'POST',
