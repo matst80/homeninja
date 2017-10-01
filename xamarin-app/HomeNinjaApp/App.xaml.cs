@@ -7,7 +7,7 @@ namespace HomeNinjaApp
     public partial class App : Application
     {
         public static bool UseMockDataStore = false;
-        public static string BackendUrl = "http://localhost:3000";
+        public static string BackendUrl = "http://fw.knatofs.se:3000";
 
         public App()
         {
