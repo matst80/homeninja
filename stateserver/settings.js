@@ -1,4 +1,4 @@
-var mongoBaseUrl = "mongodb://localhost:27017/";
+var mongoBaseUrl = "mongodb://10.10.10.1:27017/";
 
 module.exports = {
     baseTopic: "homeninja/",
@@ -11,7 +11,7 @@ module.exports = {
         port:3000
     },
     mqttSettings: {
-        port: 1883,
+        port: 1884,
         /*http: {
             port: 3000,
             bundle: true,
