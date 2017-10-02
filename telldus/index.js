@@ -17,7 +17,7 @@ function getSensors() {
     telldus.getSensors(function(err,sensors) {
         homeninja.sendNodes(sensors.map(function(v) {
             
-            console.log(v);
+            //console.log(v);
             homeninja.client.publish('telldus/sensor',JSON.stringify(v));
             return {
                 topic: "telldus/sens"+v.id,
