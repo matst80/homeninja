@@ -34,6 +34,20 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\SendState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewLoader\ViewLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NodeViews\OnOff.xaml.cs">
+      <DependentUpon>OnOff.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)NodeViews\Slider.xaml.cs">
+      <DependentUpon>Slider.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoaderViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helper\ServerHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NodeViews\TempHum.xaml.cs">
+      <DependentUpon>TempHum.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ViewLoader\NodeViewHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\INodeView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml" />
@@ -41,5 +55,19 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\ItemsPage.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\NewItemPage.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)NodeViews\OnOff.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)NodeViews\Slider.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)NodeViews\TempHum.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)NodeViews\" />
+    <Folder Include="$(MSBuildThisFileDirectory)ViewLoader\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Helper\" />
   </ItemGroup>
 </Project>

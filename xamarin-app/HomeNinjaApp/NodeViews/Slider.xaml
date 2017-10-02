@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="HomeNinjaApp.NodeViews.Slider">
+	<ContentView.Content>
+        <StackLayout Padding="10" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+            
+            <Label Text="{Binding Text}" HorizontalOptions="StartAndExpand" LineBreakMode="NoWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="16" />
+           
+            <Slider x:Name="slider" Maximum="100" Minimum="0" HorizontalOptions="End" WidthRequest="150"></Slider>
+        </StackLayout>
+	</ContentView.Content>
+</ContentView>

@@ -14,25 +14,11 @@
             margin:10px;
             padding:10px;
             float:left;
-            border:solid 1px rgba(255,255,255,0.4);
+            border:solid 1px rgba(255,255,255,0.8);
             background-color: rgba(255,255,255,0.4);
           }
-          .itemlabel {
-              margin-bottom:4px;
-          }
-          .button {
-              display: inline-block;
-              padding: 5px;
-              background: green;
-              text:#fff;
-              margin-right: 5px;
-          }
-          .button.off {
-              background: red;
-          }
           div.off {
-              background: rgba(0,0,0,0.4);
-              border-color: rgba(0,0,0,0.5);
+              background: #000;
               color:#fff;
           }
           #evts {
@@ -42,7 +28,6 @@
               top:0;
               bottom:0;
               background: rgba(255,255,255,0.4);
-              
               border:0;
               width: 200px;
           }
@@ -52,6 +37,7 @@
       </style>
     </head>
     <body>
+        <h1>Hoho</h1>
         <div id="items"></div>
         <textarea id="evts"></textarea>
       <script>
@@ -69,44 +55,22 @@
             if (!elm)
             {
                 elm = document.createElement('div');
-                var label = document.createElement('div');
-                label.className = 'itemlabel';
-                label.innerHTML = item.name;
-                elm.appendChild(label);
-                console.log(item);
-                if (item.features.indexOf('onoff')!=-1) {
-                    var on = document.createElement('span');
-                    on.innerHTML = 'ON';
-                    on.className = 'button';
-                    elm.appendChild(on);
-                    var off = document.createElement('span');
-                    off.innerHTML = 'OFF';
-                    off.className = 'button off';
-                    elm.appendChild(off);
-                    off.addEventListener('click',function() {
-                        client.publish(item.topic+"/set","off");
-                        elm.classList.add('off');
-                    },true);
-                    
-                    on.addEventListener('click',function() {
-                        client.publish(item.topic+"/set","on");
-                        elm.classList.remove('off');
-                    },true);
-                }
-                else if (item.features.indexOf("Dimmable light")!=-1) {
-                    var slider = document.createElement('input');
-                    slider.val = 0;
-                    slider.min = 0;
-                    slider.max = 100;
-                    slider.type = 'range';
-                    elm.appendChild(slider);
-                    slider.addEventListener('change',function() {
-                        client.publish(item.topic+"/set",slider.value+'');
-                    });
-                }
                 
+                elm.addEventListener('click',function() {
+                    var state = this.classList.contains('off');
+                    //console.log('click',item);
+                    if (state) {
+                        this.classList.remove('off');
+                    }
+                    else
+                        this.classList.add('off');
+                        client.publish(item.topic+"/set",state?"on":"off");
+                    
+                },true);
                 elm.className = 'node off';
                 elm.id = item.topic;
+                elm.innerHTML = item.name;
+                
                 itemParent.appendChild(elm);
             }
         }
