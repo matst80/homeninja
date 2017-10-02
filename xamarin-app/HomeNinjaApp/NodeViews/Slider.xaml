@@ -5,7 +5,7 @@
             
             <Label Text="{Binding Text}" HorizontalOptions="StartAndExpand" LineBreakMode="NoWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="16" />
            
-            <Slider x:Name="slider" Maximum="100" Minimum="0" HorizontalOptions="End" WidthRequest="150"></Slider>
+            <Slider x:Name="slider" ValueChanged="Handle_ValueChanged" Maximum="254" Minimum="0" HorizontalOptions="End" WidthRequest="150"></Slider>
         </StackLayout>
 	</ContentView.Content>
 </ContentView>

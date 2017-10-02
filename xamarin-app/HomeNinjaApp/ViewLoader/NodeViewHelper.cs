@@ -24,7 +24,7 @@ namespace HomeNinjaApp.ViewLoader
         }
 
         public Xamarin.Forms.View GetViewForNode(Node node) {
-            var viewType = NodeViews.FirstOrDefault(d => d.Key.Contains(node.Features.FirstOrDefault()));
+            var viewType = NodeViews.FirstOrDefault(d => d.Key.Any(e=>node.Features.Contains(e)));
             if (viewType.Value != null)
                 return Activator.CreateInstance(viewType.Value) as Xamarin.Forms.View;
             return new OnOff();

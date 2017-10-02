@@ -8,7 +8,7 @@ namespace HomeNinjaApp.NodeViews
     [ViewForFeature(new []{"onoff"})]
     public partial class OnOff : ContentView, INodeView
     {
-        private Node itemNode { get; set; }
+        
 
         public bool Test { get; set; }
 
@@ -27,6 +27,8 @@ namespace HomeNinjaApp.NodeViews
             InitializeComponent();
 
         }
+
+        private Node itemNode { get; set; }
 
         protected override void OnBindingContextChanged()
         {
