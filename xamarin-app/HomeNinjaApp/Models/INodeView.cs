@@ -11,8 +11,16 @@ namespace HomeNinjaApp
         public string[] Features;
     }
 
+    public interface IExpandableNode : INodeView {
+        void Expand();
+
+        void Contract();
+    }
+
     public interface INodeView
     {
         bool Test { get; set; }
+
+
     }
 }

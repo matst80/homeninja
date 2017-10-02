@@ -5,8 +5,8 @@
             
             <Label Text="{Binding Text}" HorizontalOptions="StartAndExpand" LineBreakMode="NoWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="16" />
            
-            <Label x:Name="lbTemp" Text="{Binding State}" WidthRequest="40" HorizontalOptions="End"></Label>
-            <Label x:Name="lbHum" Text="Off" WidthRequest="40" HorizontalOptions="End"></Label>
+            <Label x:Name="lbTemp" Text="" WidthRequest="40" HorizontalOptions="End"></Label>
+            <Label x:Name="lbHum" Text="" WidthRequest="40" HorizontalOptions="End"></Label>
         </StackLayout>
 	</ContentView.Content>
 </ContentView>

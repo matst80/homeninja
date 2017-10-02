@@ -3,6 +3,17 @@ using Newtonsoft.Json;
 
 namespace HomeNinjaApp
 {
+
+    public class TempHumState
+    {
+        //public string Id { get; set; }
+        [JsonProperty(PropertyName = "temp")]
+        public string Temperature { get; set; }
+
+        [JsonProperty(PropertyName = "hum")]
+        public float Humidity { get; set; }
+
+    }
  
     public class Node
     {

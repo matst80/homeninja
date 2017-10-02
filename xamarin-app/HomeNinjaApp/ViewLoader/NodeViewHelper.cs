@@ -14,7 +14,7 @@ namespace HomeNinjaApp.ViewLoader
             var nodeType = typeof(INodeView);
             var types = this.GetType().Assembly.GetExportedTypes();
             foreach(var t in types) {
-                if (t.IsAssignableFrom(nodeType)) {
+                if (nodeType.IsAssignableFrom(t)) {
                     var attr = t.GetCustomAttributes(typeof(ViewForFeatureAttribute), true).OfType<ViewForFeatureAttribute>().FirstOrDefault();
                     if (attr!=null) {
                         NodeViews.Add(attr.Features,t);
