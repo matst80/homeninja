@@ -36,7 +36,7 @@ function addToIndex(id,data,cb) {
           }
           
           var body = JSON.stringify(data);
-          https.request(options, callback).end(body);
+          http.request(options, callback).end(body);
     }
 }
 
