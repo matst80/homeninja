@@ -1,5 +1,5 @@
 {
-  "name": "tradfri",
+  "name": "dnsleases",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-tradfri": "^0.1.7",
-    "tradfri-coapdtls": "0.0.12"
+    "ping": "^0.2.2"
   }
 }
