@@ -11,14 +11,33 @@ var apiUrl = '/api/';
 var apiFunctions = {};
 var topicFunctions = {};
 
-var client = new elasticsearch.Client({
-    host: {
-      protocol: 'http',
-      host: 'fw.knatofs.se',
-      port: 8083,
-      path: '/es/'
+function addToIndex(id,data,cb) {
+    if (settings.elasticsearch) {
+        var options = {
+            "host": settings.elasticsearch.host,
+            "path": settings.elasticsearch.baseUrl + id,
+            "method": "POST",
+            "headers": { 
+              "Content-Type" : "application/json",
+            }
+          }
+          
+          callback = function(response) {
+            var str = ''
+            response.on('data', function(chunk){
+              str += chunk
+            })
+          
+            response.on('end', function(){
+              if (cb)
+              {}
+            })
+          }
+          
+          var body = JSON.stringify(data);
+          https.request(options, callback).end(body);
     }
-  })
+}
 
 function createHttpServer() {
     var ret = http.createServer(function (req, res) {
@@ -31,6 +50,7 @@ function createHttpServer() {
             {
                 function process(data) {
                     var add = lurl.substr(i.length+1);
+                    addToIndex('apicall/',{url:i,data:data});
                     apiFunctions[i]({
                         params: add.split('/'),
                         data: data,
@@ -117,16 +137,19 @@ module.exports = function(settings) {
         server.attachHttpServer(httpServ);
         server.on('published', function(packet, client) {
             console.log('got data',packet.topic);
+            addToIndex('mqttstatus/',{topic:packet.topic,message:packet.toString()});
             var func = topicFunctions[String(packet.topic)];
             func&&func(packet,client);
         });
     
         server.on('clientConnected', function(client) {
             console.log('client connected', client.id);
+            addToIndex('mqttstatus/',{type:'connect',clientid:client.id});
         });
     
         server.on('clientDisconnected',function(client) {
             console.log('client disconnected', client.id);
+            addToIndex('mqttstatus/',{type:'disconnect',clientid:client.id});
         });
     
         server.on('ready', function(){
@@ -135,6 +158,7 @@ module.exports = function(settings) {
 
         httpServ.listen(settings.httpSettings.port);
         var ret = {
+            addToIndex: addToIndex,
             addApiHandler:function(url,func) {
                 apiFunctions[apiUrl+url] = func;
             },
