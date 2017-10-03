@@ -25,7 +25,10 @@ namespace HomeNinjaApp.NodeViews
         {
             base.OnBindingContextChanged();
             itemNode = BindingContext as Node;
-            //itemNode.State as bool;
+            var alive = itemNode?.State as bool?;
+            if (alive!=null) {
+                
+            }
         }
     }
 }
