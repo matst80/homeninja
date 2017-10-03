@@ -28,7 +28,7 @@ function sendDevices() {
           name: parts[3]
       };
       ping.sys.probe(parts[2], function(isAlive){
-          var msg = isAlive ? 'host ' + host + ' is alive' : 'host ' + host + ' is dead';
+          var msg = isAlive ? 'host ' + parts[3] + ' is alive' : 'host ' + parts[3] + ' is dead';
           lease.state = isAlive;
           console.log(msg);
       });
