@@ -32,12 +32,13 @@ function sendDevices() {
           lease.state = isAlive;
           console.log(msg);
       });
+      homeninja.sendNodes([lease]);
       if (lease.name && lease.name!='*')
           leases.push(lease);
       
     });
     mergeList(leases);
-    homeninja.sendNodes(leases);
+    
     //console.log(leases);
   });
   setTimeout(sendDevices,settings.sendInterval*1000);

@@ -3,6 +3,6 @@ module.exports = {
     serverPort:3000,
     mqttPort:1884,
     baseTopic: 'dnsleases/',
-    sendInterval: 10,
+    sendInterval: 60,
     leaseFile: '/var/lib/misc/dnsmasq.leases'
 };
