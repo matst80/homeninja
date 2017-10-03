@@ -2,21 +2,19 @@ var tradfri = require("tradfri-coapdtls");
 var settings = require("./settings");
 var homeninja = require("../nodehelper/nodehelper").init(settings);
 var common = require("../common/index");
-
+var tradfriHub = new tradfri(settings.hubSettings);
+var devices = [];
 
 homeninja.on('connect',function() {
-    homeninja.load(settings.bridgeConfigKey,function(data) {
-        if (!common.isEmptyObject(data))
-            bridges = data;
-        
+   
         findBridges(function() {
             console.log('bridge found, saving');
             homeninja.save(settings.bridgeConfigKey,bridges,function(d){
                 console.log(d);
             });
         });
-    });
-    homeninja.client.subscribe('tradfri/+/+/set');
+   
+    homeninja.client.subscribe(settings.baseTopic+'+/set');
 });
 
 // function getApi(bridge) {
@@ -33,24 +31,39 @@ homeninja.client.on('message', function (topic, msg) {
     // message is Buffer
     var message = msg.toString();
     console.log(topic,message);
-    for(bridgeId in bridges) {
-        var bridge = bridges[bridgeId];
-        common.findNode(function(node) {
-            let api = getApi(bridge);
-            let level = message-0;
-            state = lightState.create();
-            if (message==level) {
-                state = state.on().brightness(level);
-            }
-            else {
-                state = (message=='on')?state.on():state.off();
-            }
-            api.setLightState(node.hueid, state, function(err, result) {
-                if (err) throw err;
-                homeninja.sendState(node,state);
+    
+    common.findNode(topic,devices,function(node) {
+        
+        let level = message-0;
+        let state = 1;
+        let time = 2;
+        
+        if (message==level) {
+            if (level==0)
+                state = 0;
+            time = 1;
+            //console.log('brightness');
+        }
+        else {
+            //level = 254;
+            state = (message=='on')?1:0;
+            level = state?254:0;
+        }
+        var send = {
+            state: state,
+            brightness: level
+          };
+        console.log('update',node.id,send);
+        //tradfriHub.connect().then( function(val) {
+            tradfriHub.setDevice(node.id, send,2).then(function(res) {
+                console.log(res);
+                homeninja.client.publish(node.topic+'/state',level.toString());
+                console.log("New value send to device");
+            }).catch(function(err) {
+                console.log('catch',err);
             });
-        });
-    }
+        //});
+    });
 });
 
 function notifyError(err) {
@@ -60,55 +73,29 @@ function notifyError(err) {
 };
 
 function findBridges(onBridgeFound) {
-    tradfriHub = new tradfri(settings.hubSettings);
+    console.log('connecting to hub');
+    
+    
     tradfriHub.connect().then( function(val) {
         console.log(val);
+        tradfriHub.getAllDevices().then(function(res) {
+            //console.log(res);
+            devices = res.map(function(i) {
+                console.log('device',i);
+                return {
+                    topic:settings.baseTopic+i['9003'],
+                    name:i['9001'],
+                    id:i['9003'],
+                    state: {},
+                    features: ['lighttemp','brightness']
+                }
+            });
+            homeninja.sendNodes(devices);
+        });
         tradfriHub.getGatewayInfo().then( function(res) {
-            console.log(res);
+            console.log('Version:',res['9029']);
         }).catch( function(error) {
             console.log ("Gateway is not reachable!")
         });
     });
-    // hue.nupnpSearch().then(function(bridgeList) {
-    //     //let bridgeArray = 
-    //     bridgeList.map(function(b) {
-            
-    //         var existing = bridges[b.id];
-    //         var ret = existing||{
-    //             devices: [],
-    //             id: b.id,
-    //             found: new Date()
-    //         };
-    //         ret.ip = b.ipaddress;
-    //         //console.log('här',ret);
-    //         if (!existing) {
-    //             baseApi.registerUser(b.ipaddress, 'Home ninja API')
-    //                 .then(function(res){
-    //                     console.log('got user',res);
-    //                     b.username = b.username;
-    //                 }).fail(notifyError).done();
-    //         }
-    //         else 
-    //             getApi(ret).fullState(function(err, config) {
-    //                 if (err) throw err;
-    //                 ret.devices = common.each(config.lights,function(v,i) {
-    //                     return { 
-    //                         hueid: i,
-    //                         uniqueid: v.uniqueid,
-    //                         modelid: v.modelid,
-    //                         state: v.state,
-    //                         name: v.name,
-    //                         features: [v.type],
-    //                         topic: common.pathJoin(settings.baseTopic,b.id,i)
-    //                     };
-    //                 });
-    //                 homeninja.sendNodes(ret.devices);
-    //                 if (onBridgeFound)
-    //                     onBridgeFound(ret);
-                        
-    //             });
-    //             bridges[ret.id] = ret;
-    //         return ret;
-    //     });
-    // }).done();
 }

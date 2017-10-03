@@ -1,8 +1,10 @@
 module.exports = {
-    server: '10.10.10.181',
+    server:'10.10.10.1',
+    serverPort:3000,
+    mqttPort:1884,
     baseTopic: 'tradfri/',
     hubSettings: {
-        securityId: "akjdhfksdjhf", 
+        securityId: "uDPchBVBLOQndJEn", 
         hubIpAddress: "10.10.10.175"
     },
     bridgeConfigKey: 'tradfri-node-bridges',

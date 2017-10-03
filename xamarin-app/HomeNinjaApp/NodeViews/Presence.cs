@@ -5,8 +5,8 @@ using Xamarin.Forms;
 
 namespace HomeNinjaApp.NodeViews
 {
-    [ViewForFeature(new []{"onoff"})]
-    public partial class OnOff : ContentView, INodeView
+    [ViewForFeature(new []{"presence"})]
+    public partial class Precense : ContentView, INodeView
     {
         
 

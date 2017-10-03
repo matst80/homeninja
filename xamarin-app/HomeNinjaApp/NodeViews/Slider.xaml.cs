@@ -5,9 +5,23 @@ using Xamarin.Forms;
 
 namespace HomeNinjaApp.NodeViews
 {
-    [ViewForFeature(new[] { "Dimmable light" })]
+    [ViewForFeature(new[] { "Dimmable light","brightness" })]
     public partial class Slider : ContentView, IExpandableNode
     {
+        private Node itemNode { get; set; }
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            itemNode = BindingContext as Node;
+        }
+
+        async void Handle_ValueChanged(object sender, Xamarin.Forms.ValueChangedEventArgs e)
+        {
+            var newval = (int)this.slider.Value;
+            await Helper.ServerHelper.Instance.SendIntStateAsync(itemNode, newval);
+        }
+
         public Slider()
         {
             InitializeComponent();

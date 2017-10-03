@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="HomeNinjaApp.NodeViews.OnOff">
+	<ContentView.Content>
+        <StackLayout Padding="10" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+            
+            <Label Text="{Binding Text}" HorizontalOptions="StartAndExpand" LineBreakMode="NoWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="16" />
+           
+            <Button x:Name="btnOn" Text="On" WidthRequest="40" Clicked="HandleOn_Clicked" HorizontalOptions="End"></Button>
+            <Button x:Name="btnOff" Text="Off" WidthRequest="40" Clicked="HandleOff_Clicked" HorizontalOptions="End"></Button>
+        </StackLayout>
+	</ContentView.Content>
+</ContentView>
