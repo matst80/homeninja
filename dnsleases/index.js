@@ -22,13 +22,14 @@ function sendDevices() {
       var lease = {
           features: ['binarysensor','presence','iplease'],
           topic: 'devices/'+parts[1],
+          state: true,
           ip: parts[2],
           mac: parts[1],
           name: parts[3]
       };
       ping.sys.probe(parts[2], function(isAlive){
           var msg = isAlive ? 'host ' + host + ' is alive' : 'host ' + host + ' is dead';
-          lease.alive = isAlive;
+          lease.state = isAlive;
           console.log(msg);
       });
       if (lease.name && lease.name!='*')

@@ -6,23 +6,14 @@ using Xamarin.Forms;
 namespace HomeNinjaApp.NodeViews
 {
     [ViewForFeature(new []{"presence"})]
-    public partial class Precense : ContentView, INodeView
+    public partial class Presence : ContentView, INodeView
     {
         
 
         public bool Test { get; set; }
 
-        async void HandleOn_Clicked(object sender, System.EventArgs e)
-        {
-            await Helper.ServerHelper.Instance.SendBoolStateAsync(itemNode,true);
-        }
-
-        async void HandleOff_Clicked(object sender, System.EventArgs e)
-        {
-            await Helper.ServerHelper.Instance.SendBoolStateAsync(itemNode, false);
-        }
-
-        public OnOff()
+       
+        public Presence()
         {
             InitializeComponent();
 
@@ -34,6 +25,7 @@ namespace HomeNinjaApp.NodeViews
         {
             base.OnBindingContextChanged();
             itemNode = BindingContext as Node;
+            //itemNode.State as bool;
         }
     }
 }
