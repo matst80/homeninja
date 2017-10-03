@@ -7,15 +7,16 @@ var ws = require('websocket').server;
 const map = require('./mimemap');
 var wsServer;
 var apiUrl = '/api/';
+var elasticServer;
 
 var apiFunctions = {};
 var topicFunctions = {};
 
 function addToIndex(id,data,cb) {
-    if (settings.elasticsearch) {
+    if (elasticServer) {
         var options = {
-            "host": settings.elasticsearch.host,
-            "path": settings.elasticsearch.baseUrl + id,
+            "host": elasticServer.host,
+            "path": elasticServer.baseUrl + id,
             "method": "POST",
             "headers": { 
               "Content-Type" : "application/json",
@@ -132,6 +133,7 @@ function createHttpServer() {
 }
 
 module.exports = function(settings) {
+        elasticServer=settings.elasticsearch.baseUrl;
         var httpServ = createHttpServer();
         var server = new mosca.Server(settings.mqttSettings);
         server.attachHttpServer(httpServ);
