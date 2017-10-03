@@ -11,6 +11,15 @@ var apiUrl = '/api/';
 var apiFunctions = {};
 var topicFunctions = {};
 
+var client = new elasticsearch.Client({
+    host: {
+      protocol: 'http',
+      host: 'fw.knatofs.se',
+      port: 8083,
+      path: '/es/'
+    }
+  })
+
 function createHttpServer() {
     var ret = http.createServer(function (req, res) {
         var lurl = req.url.toLocaleLowerCase();
