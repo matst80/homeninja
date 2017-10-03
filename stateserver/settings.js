@@ -23,7 +23,7 @@ module.exports = {
         },*/
         backend: {
             type: 'mongo',
-            url: mongoBaseUrl + 'homepersistance',
+            url: mongoBaseUrl + 'homepersistance2',
             pubsubCollection: 'ascoltatori',
             mongo: {
 
