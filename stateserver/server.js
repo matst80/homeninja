@@ -28,7 +28,7 @@ function saveStates() {
         // insert record
         db.collection('laststates').insert(states, function(err, records) {
             if (err) throw err;
-            console.log("Record added as " + records[0]._id,records);
+            console.log("Record added as " + records);
         });
     });
 }
