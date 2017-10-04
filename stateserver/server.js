@@ -1,42 +1,51 @@
-var settings = require('./settings');
+var settings = require('./settings'),
+    extend = require('node.extend'),
+    MongoClient = require('mongodb').MongoClient,
+    baseServer = require('./baseserver')(settings),
+    vm = require('vm');
 
-var extend = require('node.extend');
-var MongoClient = require('mongodb').MongoClient;
+var dbCache = {},
+    baseNode = {
+        clientId: '',
+        topic:'',
+        features: [],
+        state: {},
+        lastSeen: new Date()
+    },
+    states = {
+        nodes: {},
+        rules: {}
+    },
+    ruleScripts = {};
 
-var baseServer = require('./baseserver')(settings);
-
-var dbCache = {};
-
-var baseNode = {
-    clientId: '',
-    topic:'',
-    features: [],
-    state: {},
-    lastSeen: new Date()
-};
-
-var states = {
-    nodes: {}
-};
-
-var connectedNodes = {};
+//var connectedNodes = {};
 
 function saveStates() {
-
+    MongoClient.connect(settings.mongoPersistanceUrl, function(err,db) {
+        
+            if (err) throw err;
+            console.log("Connected to Database");
+        
+            // insert record
+            db.collection('test').insert(states, function(err, records) {
+                if (err) throw err;
+                console.log("Record added as " + records[0]._id,records);
+            });
+        });
 }
 
 function parsePacket(packet) {
     var ret = [];
     
     var data = packet.payload.toString();
-    console.log(data);
+    //console.log(data);
     if (data.indexOf('{')==0 || data.indexOf('[')==0) {
         var obj = JSON.parse(data);
-        console.log('packet as json',obj);
+        //console.log('packet as json',obj);
         ret = obj.length?obj:[obj];
     }
     else {
-        console.log('packet as string',data);        
+        //console.log('packet as string',data);        
         data.split('\n').forEach(function(arrpart){    
             var row = {};
             arrpart.split(';').forEach(function(v) {
@@ -48,6 +57,13 @@ function parsePacket(packet) {
         });
     }
     return ret.length?ret:[ret];
+}
+
+var stateTimeout;
+function statesChanged() {
+    if (stateTimeout)
+        clearTimeout(stateTimeout);
+    stateTimeout = setTimeout(saveStates,1000);
 }
 
 function parseNode(n) {
@@ -64,7 +80,7 @@ function parseNodes(data,clientid) {
         //console.log(n);
         if (n.topic || n.features) {
             var ndata = parseNode(n);
-            console.log('found node',ndata);
+            //console.log('found node',ndata);
             if (ndata) {
                 var url = ndata.topic||(settings.baseTopic+clientid);
                 var node = states.nodes[url]||{};
@@ -74,6 +90,7 @@ function parseNodes(data,clientid) {
             }
         }
     });
+    statesChanged();
 }
 
 
@@ -94,6 +111,34 @@ baseServer.addTopicHandler("init",function(packet,client) {
         console.log('init packet sent');
     });
 });
+
+const contextSandbox = {
+    homeninja: baseServer,
+    log: function(a,b) {
+        console.log.apply(this,arguments); 
+    }
+}
+const context = new vm.createContext(contextSandbox);
+
+function addRule(id,title,data) {
+    var scr = new vm.Script(data,{filename:id+'.js',displayErrors:true});
+    scr.runInContext(context);
+    var ret = state.rules[id] = {
+        id: id,
+        title: title,
+        //scrtip: scr,
+        rule: data
+    };
+    ruleScripts[id] = scr;
+    statesChanged();
+    return ret;
+}
+
+baseServer.addApiHandler("rule",function(req,cb) {
+    var obj = JSON.parse(req.data);
+    addRule(obj.id,obj.name,obj.rule);
+    cb({ok:true});
+})
 
 baseServer.addApiHandler("save", function(req,cb) {
     
