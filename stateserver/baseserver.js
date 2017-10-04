@@ -144,7 +144,7 @@ module.exports = function(settings) {
         
         function broadcastNew() {
             var message = new Buffer("homeninja-stateserver");
-            dgramServer.send(message, 0, message.length, settings.broadcast.port, settings.broadcast.addr||'255.255.255.255', function() {
+            dgramServer.send(message, 0, message.length, settings.broadcast.port||6024, settings.broadcast.addr||'255.255.255.255', function() {
                 console.log("Sent '" + message + "'");
             });
         }
