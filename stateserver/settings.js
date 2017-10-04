@@ -7,6 +7,10 @@ module.exports = {
         'urn:schemas-upnp-org:service:ContentDirectory:1'
         //'urn:schemas-upnp-org:service:ConnectionManager:1'
     ],
+    broadcast: {
+        port: 6024,
+        addr: '255.255.255.255',
+    },
     elasticsearch:  {
         baseUrl: '/es/homeninaja/',
         host: 'fw.knatofs.se:8083'

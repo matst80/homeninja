@@ -7,6 +7,8 @@ var ws = require('websocket').server;
 const map = require('./mimemap');
 var wsServer;
 var apiUrl = '/api/';
+var dgram = require('dgram');
+var dgramServer = dgram.createSocket("udp4"); 
 var elasticServer;
 
 var apiFunctions = {};
@@ -134,6 +136,20 @@ function createHttpServer() {
 
 module.exports = function(settings) {
         elasticServer=settings.elasticsearch.baseUrl;
+
+        dgramServer.bind(function() {
+            dgramServer.setBroadcast(true);
+            setInterval(broadcastNew, 3000);
+        });
+        
+        function broadcastNew() {
+            var message = new Buffer("homeninja-stateserver");
+            dgramServer.send(message, 0, message.length, settings.broadcast.port, settings.broadcast.addr||'255.255.255.255', function() {
+                console.log("Sent '" + message + "'");
+            });
+        }
+        
+
         var httpServ = createHttpServer();
         var server = new mosca.Server(settings.mqttSettings);
         server.attachHttpServer(httpServ);

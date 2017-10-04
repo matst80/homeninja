@@ -26,7 +26,7 @@ function apiRequest(opt,cb) {
 
 module.exports = {
     init:function(settings) {
-        console.log('preocnnect',settings.server);
+        console.log('preconnect',settings.server);
         var client = mqtt.connect('mqtt://'+settings.server+(settings.mqttPort?(':'+settings.mqttPort):''));
         client.on('connect', function () {
             setTimeout(function() {
