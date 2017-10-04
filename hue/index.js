@@ -96,7 +96,7 @@ function findBridges(onBridgeFound) {
                             modelid: v.modelid,
                             state: v.state,
                             name: v.name,
-                            features: [v.type],
+                            features: ['onoff','brightness'],
                             topic: common.pathJoin(settings.baseTopic,b.id,i)
                         };
                     });

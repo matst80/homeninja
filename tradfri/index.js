@@ -87,7 +87,7 @@ function findBridges(onBridgeFound) {
                     name:i['9001'],
                     id:i['9003'],
                     state: {},
-                    features: ['lighttemp','brightness']
+                    features: ['lighttemp','brightness','onoff']
                 }
             });
             homeninja.sendNodes(devices);

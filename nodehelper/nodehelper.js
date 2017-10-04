@@ -117,6 +117,9 @@ module.exports = {
                     data:JSON.stringify(data)
                 },cb);
             },
+            setState: function(node, state) {
+                client.publish(node.topic+'/set',state);
+            },
             sendState: function(node, state) {
                 node.state = state;
                 client.publish(node.topic+'/state',state);
