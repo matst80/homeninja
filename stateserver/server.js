@@ -22,16 +22,15 @@ var dbCache = {},
 
 function saveStates() {
     MongoClient.connect(settings.mongoPersistanceUrl, function(err,db) {
-        
+        if (err) throw err;
+        console.log("Connected to Database");
+    
+        // insert record
+        db.collection('laststates').insert(states, function(err, records) {
             if (err) throw err;
-            console.log("Connected to Database");
-        
-            // insert record
-            db.collection('test').insert(states, function(err, records) {
-                if (err) throw err;
-                console.log("Record added as " + records[0]._id,records);
-            });
+            console.log("Record added as " + records[0]._id,records);
         });
+    });
 }
 
 function parsePacket(packet) {
