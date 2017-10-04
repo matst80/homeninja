@@ -43,24 +43,25 @@ bridge.on('listening', function(){
             .getCharacteristic(Characteristic.On)
             .on('set', function(value, callback) {
               console.log('set state',value,elm);
-              homeninja.sendState(elm,value?'on':'off');
+              homeninja.setState(elm,value?'on':'off');
               callback();
             }).on('get', function(callback) {
               callback(null, true);
             });
+            if (elm.features.indexOf('brightness')!=-1) {
           accessory
             .getService(Service.Lightbulb)
             .addCharacteristic(Characteristic.Brightness)
             .on('set', function(value, callback) {
               //LightController.setBrightness(value);
-              console.log('set state (value)',value,elm);
-              console.log('set value');
+              console.log('set state (value)',value.toString(),elm);
+              homeninja.setState(elm,value.toString());
               callback();
             })
             .on('get', function(callback) {
               callback(null, 50);
             });
-          
+          }
           
             console.log('add to bridge',elm);
           bridge.addBridgedAccessory(accessory);
@@ -79,7 +80,7 @@ bridge.on('listening', function(){
 // Publish the Bridge on the local network.
 bridge.publish({
   port: 51826,
-  username: "CC:22:3D:E3:CA:F9",
+  username: "CC:22:3D:E3:CA:F1",
   pincode: "123-45-678",
   category: HomeKit.Accessory.Categories.BRIDGE
 });
