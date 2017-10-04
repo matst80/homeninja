@@ -3,6 +3,7 @@ module.exports = {
     serverPort:3000,
     mqttPort:1884,
     baseTopic: 'tradfri/',
+    broadcastPort: 6024,
     hubSettings: {
         securityId: "uDPchBVBLOQndJEn", 
         hubIpAddress: "10.10.10.175"
