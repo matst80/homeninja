@@ -70,12 +70,26 @@ module.exports = {
             on: function(evt,cb) {
                 eventEmitter.on(evt,cb);
             },
+            sendJson: function(topic,data,cb) {
+                client.publish(topic,JSON.stringify(data));
+                cb && cb();
+            },
             client: client,
             load: function(key,cb) {
                 apiRequest({
                     hostname:settings.server,
                     port:settings.serverPort||3000,
                     path:'/api/load/'+key,
+                    method: 'GET'
+                },function(d){
+                    cb(JSON.parse(d));
+                });
+            },
+            getNodes: function(cb) {
+                apiRequest({
+                    hostname:settings.server,
+                    port:settings.serverPort||3000,
+                    path:'/api/node',
                     method: 'GET'
                 },function(d){
                     cb(JSON.parse(d));

@@ -1,13 +1,13 @@
 var fs = require('fs'),
-    settings = require("./settings"),
-    homeninja = require("../nodehelper/nodehelper").init(settings),
-    ping = require('ping'),
-    leaseList = [];
+settings = require("./settings"),
+homeninja = require("../nodehelper/nodehelper").init(settings),
+ping = require('ping'),
+leaseList = [];
 
 function mergeList(lst) {
   var changed = [];
   lst.map(function(i) {
-      console.log(i);
+    console.log(i);
   });
 }
 
@@ -20,21 +20,21 @@ function sendDevices() {
     data.split('\n').forEach(function(line) {
       var parts = line.split(' ');
       var lease = {
-          features: ['binarysensor','presence','iplease'],
-          topic: 'devices/'+parts[1],
-          state: true,
-          ip: parts[2],
-          mac: parts[1],
-          name: parts[3]
+        features: ['binarysensor','presence','iplease'],
+        topic: 'devices/'+parts[1],
+        state: true,
+        ip: parts[2],
+        mac: parts[1],
+        name: parts[3]
       };
       ping.sys.probe(parts[2], function(isAlive){
-          var msg = isAlive ? 'host ' + parts[3] + ' is alive' : 'host ' + parts[3] + ' is dead';
-          lease.state = isAlive;
-          console.log(msg);
+        var msg = isAlive ? 'host ' + parts[3] + ' is alive' : 'host ' + parts[3] + ' is dead';
+        lease.state = isAlive;
+        console.log(msg);
       });
       homeninja.sendNodes([lease]);
       if (lease.name && lease.name!='*')
-          leases.push(lease);
+      leases.push(lease);
       
     });
     mergeList(leases);

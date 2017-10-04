@@ -1,6 +1,7 @@
 var settings = require('./settings'),
     extend = require('node.extend'),
     MongoClient = require('mongodb').MongoClient,
+    //jsonfile = require('jsonfile');
     baseServer = require('./baseserver')(settings),
     vm = require('vm');
 
@@ -21,7 +22,7 @@ var dbCache = {},
 //var connectedNodes = {};
 
 function saveStates() {
-    MongoClient.connect(settings.mongoPersistanceUrl, function(err,db) {
+    /*MongoClient.connect(settings.mongoPersistanceUrl, function(err,db) {
         if (err) throw err;
         console.log("Connected to Database");
     
@@ -30,7 +31,8 @@ function saveStates() {
             if (err) throw err;
             console.log("Record added as " + records);
         });
-    });
+    });*/
+    console.log('save states!!!');
 }
 
 function parsePacket(packet) {
