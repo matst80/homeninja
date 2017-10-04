@@ -34,7 +34,7 @@ module.exports = {
         
         function connectToServer() {
             console.log('pre-connect',settings.server);
-            client = mqtt.connect('mqtt://'+settings.server+(settings.mqttPort?(':'+settings.mqttPort):''));
+            client = mqtt.connect('mqtt://'+settings.server+(settings.mqttPort?(':'+settings.mqttPort):''),{resubscribe:false});
             client.on('connect', function () {
                 setTimeout(function() {
                     connected = true;
