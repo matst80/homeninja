@@ -10,6 +10,8 @@ const UUID           = HomeKit.uuid;
 // Start by creating our Bridge which will host all loaded Accessories
 const uuid = HomeKit.uuid.generate("homekit:homeninja");
 const bridge = new HomeKit.Bridge('Homeninja', uuid);
+var acc = {};
+var allNodes;
 
 // Listen for bridge identification event
 bridge.on('identify', function(paired, callback) {
@@ -21,13 +23,15 @@ bridge.on('listening', function(){
     //sendDevices();
     console.log('connected');
     homeninja.getNodes(function(nodes) {
+      allNodes = nodes;
       //console.log('nodes',nodes);
-      nodes.forEach(function(elm) {
+      allNodes.forEach(function(elm) {
         if (elm.name && elm.features && elm.features.indexOf('onoff')!=-1) {
           
           var uuid = UUID.generate('homekit:'+elm.name);
           // This is the Accessory that we'll return to HAP-NodeJS that represents our light.
           var accessory = new Accessory('Light', uuid);
+          acc[elm.topic] = accessory;
           accessory.getService(Service.AccessoryInformation)
           .setCharacteristic(Characteristic.Manufacturer, "Oltica")
           .setCharacteristic(Characteristic.Model, "Rev-1")

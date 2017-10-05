@@ -2,6 +2,11 @@ var mongoBaseUrl = "mongodb://10.10.10.1:27017/";
 
 module.exports = {
     baseTopic: "homeninja/",
+    customization: {
+        "telldus/conf20": {
+            name:'Lampa ovanför soffan'
+        }
+    },
     usn: [//'upnp:rootdevice',
         //'urn:schemas-upnp-org:device:MediaServer:1',
         'urn:schemas-upnp-org:service:ContentDirectory:1'

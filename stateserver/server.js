@@ -77,6 +77,7 @@ function parseNode(n) {
 }
 
 function parseNodes(data,clientid) {
+    var ret = [];
     data.forEach(function(n) {
         //console.log(n);
         if (n.topic || n.features) {
@@ -87,12 +88,41 @@ function parseNodes(data,clientid) {
                 var node = states.nodes[url]||{};
                 node.clientId = clientid;
                 node.lastSeen = new Date();
-                states.nodes[url] = extend(node,ndata);
+                var changed = ndoe.state!=ndata.state;
+                var nn = extend(ndata,node);
+                if (settings.customization && settings.customization[url]) {
+                    nn = extend(nn,settings.customization[url]);
+                }
+                states.nodes[url] = nn;
+                if (changed)
+                    ret.push(nn);
             }
         }
     });
+    return ret;
     statesChanged();
 }
+
+baseServer.addTopicHandler("nodeupdate",function(packet,client) {
+    var data = parsePacket(packet);
+    console.log('preinit',client.id);
+    if (data && data.length) {
+
+    
+        var updatedNodes = parseNodes(data,String(client.id));
+
+        console.log('init',states);
+
+        baseServer.mqttServer.publish({
+            topic:settings.baseTopic+"nodechange",
+            payload:JSON.stringify(updatedNodes),
+            qos: 0, // 0, 1, or 2
+            retain: false // or true
+        },function(){
+            console.log('init packet sent');
+        });
+    }
+});
 
 
 baseServer.addTopicHandler("init",function(packet,client) {
