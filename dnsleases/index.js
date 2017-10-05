@@ -4,6 +4,8 @@ homeninja = require("../nodehelper/nodehelper").init(settings),
 ping = require('ping'),
 leaseList = [];
 
+var firstSend = true;
+
 function mergeList(lst) {
   var changed = [];
   lst.map(function(i) {
@@ -32,13 +34,17 @@ function sendDevices() {
         lease.state = isAlive;
         console.log(msg);
       });
-      homeninja.sendNodes([lease]);
-      if (lease.name && lease.name!='*')
-      leases.push(lease);
-      
+      if (lease.name && lease.name!='*') {
+      if (!firstSend)
+        homeninja.updateNode([lease]);
+        leases.push(lease);
+      }
     });
     mergeList(leases);
-    
+    if (firstSend) {
+      homeninja.sendNodes(leases);
+      firstSend = false;
+    }
     //console.log(leases);
   });
   setTimeout(sendDevices,settings.sendInterval*1000);

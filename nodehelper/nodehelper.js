@@ -74,6 +74,11 @@ module.exports = {
                 client.publish(topic,JSON.stringify(data));
                 cb && cb();
             },
+            // onNodeChange: function(cb) {
+            //     client.on('homeninja/nodechange',function() {
+
+            //     });
+            // },
             client: client,
             load: function(key,cb) {
                 apiRequest({
@@ -118,7 +123,9 @@ module.exports = {
                 },cb);
             },
             setState: function(node, state) {
-                client.publish(node.topic+'/set',state);
+                if (node.state!=state) {
+                    client.publish(node.topic+'/set',state);
+                }
             },
             sendState: function(node, state) {
                 node.state = state;
