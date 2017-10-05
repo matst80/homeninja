@@ -84,9 +84,10 @@ var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
 });
 
 var devlistener = telldus.addDeviceEventListener(function(deviceId, status) {
-    common.findNode('telldus/conf'+deviceId,nodes,function(elm) {
+    common.findNode('telldus/conf'+deviceId+'/',nodes,function(elm) {
         elm.state = getState(status);
         homeninja.updateNodes([elm]);
+        console.log('found and updated',elm);
     });
     console.log('Device ' + deviceId + ' is now ' + status.name);
 });
