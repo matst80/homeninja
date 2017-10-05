@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 namespace HomeNinjaApp.NodeViews
 {
-    [ViewForFeature(new[] { "Dimmable light","brightness" })]
+    [ViewForFeature(new[] { "brightness" })]
     public partial class Slider : ContentView, IExpandableNode
     {
         private Node itemNode { get; set; }

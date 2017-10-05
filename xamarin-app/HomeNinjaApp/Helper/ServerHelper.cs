@@ -20,6 +20,13 @@ namespace HomeNinjaApp.Helper
             }
         }
 
+        public async System.Threading.Tasks.Task<HttpResponseMessage> Post(string url, object item)
+        {
+            var serializedItem = JsonConvert.SerializeObject(item);
+            return await client.PostAsync(url, new StringContent(serializedItem, System.Text.Encoding.UTF8, "application/json"));
+
+        }
+
         public async System.Threading.Tasks.Task SendBoolStateAsync(Node item, bool newstate)
         {
 
@@ -29,8 +36,9 @@ namespace HomeNinjaApp.Helper
                 Topic = item.Topic + "/set",
                 State = item.BoolState ? "on" : "off"
             };
-            var serializedItem = JsonConvert.SerializeObject(state);
-            var response = await client.PostAsync($"api/sendstate", new StringContent(serializedItem, System.Text.Encoding.UTF8, "application/json"));
+
+            await Post($"api/sendstate", state);
+
         }
 
         public async System.Threading.Tasks.Task SendIntStateAsync(Node item, int newstate)
@@ -42,8 +50,7 @@ namespace HomeNinjaApp.Helper
                 Topic = item.Topic + "/set",
                 State = newstate.ToString()
             };
-            var serializedItem = JsonConvert.SerializeObject(state);
-            var response = await client.PostAsync($"api/sendstate", new StringContent(serializedItem, System.Text.Encoding.UTF8, "application/json"));
+            await Post($"api/sendstate", state);
         }
 
     }
