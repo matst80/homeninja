@@ -17,23 +17,12 @@ namespace HomeNinjaApp
 
     }
  
-    public class Node : INotifyPropertyChanged
+    [PropertyChanged.AddINotifyPropertyChangedInterface]
+    public class Node
     {
-        private string _text = "unnamed";
-
         [JsonProperty(PropertyName = "name")]
-        public string Text { 
-            get {
-                return _text;
-            }
-            set
-            {
-                if (_text != value)
-                {
-                    _text = value;
-                    OnPropertyChanged();
-                }
-            }
+        public string Text {
+            get;set;
         }
 
         [JsonProperty(PropertyName = "desc")]
@@ -49,16 +38,5 @@ namespace HomeNinjaApp
         public object State { get; set; }
 
         public bool BoolState { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this,
-                    new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }

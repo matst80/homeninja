@@ -1,5 +1,5 @@
 module.exports = {
-    server:'10.10.10.1',
+    server:'fw.knatofs.se',
     serverPort:3000,
     mqttPort:1884,
     baseTopic: 'dnsleases/',

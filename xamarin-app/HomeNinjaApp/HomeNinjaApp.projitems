@@ -54,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Helper\LocationHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml" />
@@ -81,5 +82,8 @@
     <Folder Include="$(MSBuildThisFileDirectory)NodeViews\" />
     <Folder Include="$(MSBuildThisFileDirectory)ViewLoader\" />
     <Folder Include="$(MSBuildThisFileDirectory)Helper\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)FodyWeavers.xml" />
   </ItemGroup>
 </Project>

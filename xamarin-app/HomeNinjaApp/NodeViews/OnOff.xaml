@@ -4,7 +4,7 @@
         <StackLayout Padding="10" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
             
             <Label Text="{Binding Text}" HorizontalOptions="StartAndExpand" LineBreakMode="NoWrap" Style="{DynamicResource ListItemTextStyle}" FontSize="16" />
-           
+            <Label Text="{Binding State}" />
             <Button x:Name="btnOn" Text="On" WidthRequest="40" Clicked="HandleOn_Clicked" HorizontalOptions="End"></Button>
             <Button x:Name="btnOff" Text="Off" WidthRequest="40" Clicked="HandleOff_Clicked" HorizontalOptions="End"></Button>
         </StackLayout>

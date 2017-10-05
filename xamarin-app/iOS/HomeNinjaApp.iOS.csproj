@@ -112,11 +112,35 @@
     <Reference Include="Plugin.Permissions">
       <HintPath>..\packages\Plugin.Permissions.2.0.1\lib\Xamarin.iOS10\Plugin.Permissions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive">
+      <HintPath>..\packages\System.Reactive.4.0.0-preview00001\lib\netstandard1.3\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Mqtt">
+      <HintPath>..\packages\System.Net.Mqtt.0.4.9-experimental\lib\netstandard1.3\System.Net.Mqtt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\System.Reactive.Linq.4.0.0-preview00001\lib\netstandard1.3\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\packages\System.Reactive.PlatformServices.4.0.0-preview00001\lib\netstandard1.3\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\System.Reactive.Interfaces.4.0.0-preview00001\lib\netstandard1.3\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\System.Reactive.Core.4.0.0-preview00001\lib\netstandard1.3\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PropertyChanged">
+      <HintPath>..\packages\PropertyChanged.Fody.2.1.4\lib\netstandard1.0\PropertyChanged.dll</HintPath>
+    </Reference>
     <Reference Include="Plugin.Geolocator.Abstractions">
-      <HintPath>..\packages\Xam.Plugin.Geolocator.4.0.1\lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.dll</HintPath>
+      <HintPath>..\packages\Xam.Plugin.Geolocator.5.0.0-beta124\lib\Xamarin.iOS10\Plugin.Geolocator.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.Geolocator">
-      <HintPath>..\packages\Xam.Plugin.Geolocator.4.0.1\lib\Xamarin.iOS10\Plugin.Geolocator.dll</HintPath>
+      <HintPath>..\packages\Xam.Plugin.Geolocator.5.0.0-beta124\lib\Xamarin.iOS10\Plugin.Geolocator.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Tracer">
+      <HintPath>..\packages\System.Diagnostics.Tracer.2.0.8\lib\netstandard1.3\System.Diagnostics.Tracer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +167,7 @@
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <None Include="packages.config" />
+    <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -150,4 +175,6 @@
   <Import Project="..\HomeNinjaApp\HomeNinjaApp.projitems" Label="Shared" Condition="Exists('..\HomeNinjaApp\HomeNinjaApp.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.4.0.282\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.4.0.282\build\netstandard1.0\Xamarin.Forms.targets')" />
+  <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Import Project="..\packages\Fody.2.1.3\build\netstandard1.2\Fody.targets" Condition="Exists('..\packages\Fody.2.1.3\build\netstandard1.2\Fody.targets')" />
 </Project>
