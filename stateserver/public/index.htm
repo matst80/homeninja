@@ -49,9 +49,9 @@
         var itemParent = document.getElementById('items');
 
         function createOrUpdate(item) {
-            var id = item.topic.replace('/','');
+            //var id = item.topic.replace('/','');
             var elm = document.getElementById(item.topic);
-            
+            console.log('hoho',elm);
             if (!elm)
             {
                 elm = document.createElement('div');
@@ -60,25 +60,27 @@
                     var state = this.classList.contains('off');
                     //console.log('click',item);
                     if (state) {
-                        this.classList.remove('off');
+                        //this.classList.remove('off');
                     }
                     else
-                        this.classList.add('off');
+                        //this.classList.add('off');
                         client.publish(item.topic+"/set",state?"on":"off");
                     
                 },true);
-                elm.className = 'node '+item.state;
-                elm.id = item.topic;
-                elm.innerHTML = item.name;
                 
+                elm.id = item.topic;                
                 itemParent.appendChild(elm);
             }
+            else
+                console.log('update',item.name);
+            elm.className = 'node '+item.state;
+            elm.innerHTML = item.name;
         }
 
         function parseStates(s) {
             for(i in s) {
                 var item = s[i];
-                console.log(item);
+                //console.log(item);
                 createOrUpdate(item);
             }
         }
@@ -88,7 +90,7 @@
                 console.log('client added',payload);
                 
                 var obj = JSON.parse(payload);
-                parseStates(obj.nodes);
+                parseStates(obj.nodes||obj);
                 console.log(obj);
             }
             else if (topic=="homeninja/notify"){

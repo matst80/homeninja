@@ -1,7 +1,7 @@
 var settings = require('./settings'),
     extend = require('node.extend'),
     MongoClient = require('mongodb').MongoClient,
-    //jsonfile = require('jsonfile');
+    jsonfile = require('jsonfile');
     baseServer = require('./baseserver')(settings),
     vm = require('vm');
 
@@ -15,9 +15,17 @@ var dbCache = {},
     },
     states = {
         nodes: {},
-        rules: {}
+        rules: {},
+        customization: {}
     },
     ruleScripts = {};
+
+jsonfile.readFile('./states.json',function(err,obj) {
+    if (!err)
+    {
+        states = obj;
+    }
+});
 
 //var connectedNodes = {};
 
@@ -32,6 +40,7 @@ function saveStates() {
             console.log("Record added as " + records);
         });
     });*/
+    jsonfile.writeFileSync('./states.json',states);
     console.log('save states!!!');
 }
 
@@ -76,6 +85,15 @@ function parseNode(n) {
     return ret;
 }
 
+function hasChange(a,b) {
+    if (a.state!=b.state)
+        return true;
+    if (a.name!=b.name) {
+        return true;
+    }
+    return false;
+}
+
 function parseNodes(data,clientid) {
     var ret = [];
     data.forEach(function(n) {
@@ -86,13 +104,14 @@ function parseNodes(data,clientid) {
             if (ndata) {
                 var url = ndata.topic||(settings.baseTopic+clientid);
                 var node = states.nodes[url]||{state:'unknown'};
-                node.clientId = clientid;
-                var changed = node.state!=ndata.state;
+                if (clientid)
+                    node.clientId = clientid;
+                var changed = hasChange(node,ndata);
                 extend(node,ndata);
-                if (settings.customization && settings.customization[url]) {
-                    extend(node,settings.customization[url]);
+                if (states.customization && states.customization[url]) {
+                    extend(node,states.customization[url]);
                 }
-                
+                changed = changed||hasChange(node,ndata)
                 node.lastSeen = new Date();
                 states.nodes[url] = node;
                 if (changed) {
@@ -107,24 +126,24 @@ function parseNodes(data,clientid) {
     
 }
 
+function updateNodes(data,clientid) {
+    var updatedNodes = parseNodes(data,clientid);
+
+    baseServer.mqttServer.publish({
+        topic:settings.baseTopic+"nodechange",
+        payload:JSON.stringify(updatedNodes),
+        qos: 0, // 0, 1, or 2
+        retain: false // or true
+    },function(){
+        console.log('update packet sent');
+    });
+}
+
 baseServer.addTopicHandler("nodeupdate",function(packet,client) {
     var data = parsePacket(packet);
-    console.log('preinit',client.id);
+    console.log('nodeupdate',client.id);
     if (data && data.length) {
-
-    
-        var updatedNodes = parseNodes(data,String(client.id));
-
-        console.log('init',states);
-
-        baseServer.mqttServer.publish({
-            topic:settings.baseTopic+"nodechange",
-            payload:JSON.stringify(updatedNodes),
-            qos: 0, // 0, 1, or 2
-            retain: false // or true
-        },function(){
-            console.log('init packet sent');
-        });
+        updateNodes(data,client.id.toString());
     }
 });
 
@@ -173,7 +192,18 @@ baseServer.addApiHandler("rule",function(req,cb) {
     var obj = JSON.parse(req.data);
     addRule(obj.id,obj.name,obj.rule);
     cb({ok:true});
-})
+});
+
+
+baseServer.addApiHandler("customization",function(req,cb) {
+    var obj = JSON.parse(req.data);
+    console.log('customize',obj);
+    states.customization[obj.id] = obj.data;
+    var olditem = states.nodes[obj.id];
+    updateNodes([olditem]);
+    statesChanged();
+    cb({ok:true});
+});
 
 baseServer.addApiHandler("save", function(req,cb) {
     
