@@ -67,12 +67,14 @@
                         client.publish(item.topic+"/set",state?"on":"off");
                     
                 },true);
-                elm.className = 'node '+item.state;
+                
                 elm.id = item.topic;
-                elm.innerHTML = item.name;
+                
                 
                 itemParent.appendChild(elm);
             }
+            elm.className = 'node '+item.state;
+            elm.innerHTML = item.name;
         }
 
         function parseStates(s) {
