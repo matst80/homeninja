@@ -11,7 +11,7 @@ namespace HomeNinjaApp.iOS
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
     {
 
-        public static LocationManager Manager = null;
+        //public static LocationManager Manager = null;
 
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
