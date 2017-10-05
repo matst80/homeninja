@@ -87,12 +87,12 @@ function parseNodes(data,clientid) {
                 var url = ndata.topic||(settings.baseTopic+clientid);
                 var node = states.nodes[url]||{};
                 node.clientId = clientid;
-                node.lastSeen = new Date();
-                var changed = ndoe.state!=ndata.state;
+                var changed = node.state!=ndata.state;
                 var nn = extend(ndata,node);
                 if (settings.customization && settings.customization[url]) {
                     nn = extend(nn,settings.customization[url]);
                 }
+                nn.lastSeen = new Date();
                 states.nodes[url] = nn;
                 if (changed)
                     ret.push(nn);
