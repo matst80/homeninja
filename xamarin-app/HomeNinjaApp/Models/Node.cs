@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace HomeNinjaApp
@@ -15,11 +17,24 @@ namespace HomeNinjaApp
 
     }
  
-    public class Node
+    public class Node : INotifyPropertyChanged
     {
-        //public string Id { get; set; }
+        private string _text = "unnamed";
+
         [JsonProperty(PropertyName = "name")]
-        public string Text { get; set; }
+        public string Text { 
+            get {
+                return _text;
+            }
+            set
+            {
+                if (_text != value)
+                {
+                    _text = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         [JsonProperty(PropertyName = "desc")]
         public string Description { get; set; }
@@ -34,5 +49,16 @@ namespace HomeNinjaApp
         public object State { get; set; }
 
         public bool BoolState { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this,
+                    new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 }

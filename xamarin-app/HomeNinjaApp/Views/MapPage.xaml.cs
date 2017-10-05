@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 using Xamarin.Forms;
 
-namespace HomeNinjaApp.Views
-{
+namespace HomeNinjaApp {
+
     public partial class MapPage : ContentPage
     {
         public MapPage()
