@@ -11,7 +11,7 @@ bot.on('message', (msg) => {
   bot.sendMessage(chatId, 'Received your message');
 });
 
-bot.onText(/\/echo (.+)/, (msg, match) => {
+bot.onText(/\/hn (.+)/, (msg, match) => {
     
     const chatId = msg.chat.id;
     const resp = match[1]; // the captured "whatever" 
@@ -40,10 +40,13 @@ homeninja.on('connect',function() {
 });
 
 homeninja.client.on('message', function (topic, msg) { 
-  data = JSON.parse(msg.toString());
+  data = {id: settings.defaultChatId, message:msg};
+  if (msg.indexOf('{')!=-1) {
+    data = JSON.parse(msg.toString());
+  }
   if (topic=='telegram/send')
   {
-    bot.sendMessage(data.id,data.message);
+    bot.sendMessage(data.id||settings.defaultChatId,data.message);
   }
 });
 
