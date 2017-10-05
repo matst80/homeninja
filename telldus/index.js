@@ -77,25 +77,41 @@ function toObj(data) {
     return ret;
 }
 
+var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
+    console.log('Raw device event: ' + data);
+    homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
+});
+
+var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
+    console.log('Raw device event: ' + data);
+    homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
+});
+
+var devlistener = telldus.addDeviceEventListener(function(deviceId, status) {
+    common.findNode('/elldus/conf'+deviceId,nodes,function(elm) {
+        elm.state = status;
+        homeninja.updateNodes([elm]);
+    });
+    console.log('Device ' + deviceId + ' is now ' + status.name);
+});
+
 homeninja.on('connect',function() {    
     getNodes();
     homeninja.client.subscribe("telldus/+/set");
-    var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
-        console.log('Raw device event: ' + data);
-        homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
-    });
+    
 });
 
 homeninja.client.on('message', function (topic, msg) {
     // message is Buffer
     var message = msg.toString();
-    console.log(topic,message,nodes);
+    //console.log(topic,message,nodes);
     common.findNode(topic,nodes,function(node) {
         console.log('turning',node,message);        
 	var on = (message=="on");
 	telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
             console.log('deviceId is now ',message);
-            homeninja.client.publish(node.topic+'/state',message);
+            homeninja.sendState(node,message);
+            //homeninja.client.publish(node.topic+'/state',message);
         });
     });
 });

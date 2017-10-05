@@ -106,7 +106,15 @@ module.exports = {
                     console.log('done sending',arguments);
                 });
                 return nodes;
-	        },
+            },
+            updateNodes: function(nodes) {
+                console.log('sending updated nodes: ',nodes.length);
+                client.publish(baseTopic+'nodeupdate',new Buffer(JSON.stringify(nodes)),function() {
+                    console.log('done sending',arguments);
+                });
+                return nodes;
+            },
+            connected:connected,
             sendNotification: function(data) {
                 client.publish(baseTopic+'notify',data);
             },

@@ -67,7 +67,7 @@
                         client.publish(item.topic+"/set",state?"on":"off");
                     
                 },true);
-                elm.className = 'node off';
+                elm.className = 'node '+item.state;
                 elm.id = item.topic;
                 elm.innerHTML = item.name;
                 
@@ -84,7 +84,7 @@
         }
 
         client.on("message", function(topic, payload) {
-            if (topic=="homeninja/clientadded") {
+            if (topic=="homeninja/clientadded" || topic=="homeninja/nodechange") {
                 console.log('client added',payload);
                 
                 var obj = JSON.parse(payload);
