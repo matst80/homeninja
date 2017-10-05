@@ -85,22 +85,26 @@ function parseNodes(data,clientid) {
             //console.log('found node',ndata);
             if (ndata) {
                 var url = ndata.topic||(settings.baseTopic+clientid);
-                var node = states.nodes[url]||{};
+                var node = states.nodes[url]||{state:'unknown'};
                 node.clientId = clientid;
                 var changed = node.state!=ndata.state;
                 var nn = extend(ndata,node);
                 if (settings.customization && settings.customization[url]) {
                     nn = extend(nn,settings.customization[url]);
                 }
+                
                 nn.lastSeen = new Date();
                 states.nodes[url] = nn;
-                if (changed)
+                if (changed) {
                     ret.push(nn);
+                    console.log(nn);
+                }
             }
         }
     });
-    return ret;
     statesChanged();
+    return ret;
+    
 }
 
 baseServer.addTopicHandler("nodeupdate",function(packet,client) {
@@ -131,7 +135,7 @@ baseServer.addTopicHandler("init",function(packet,client) {
     if (data && data.length)
         parseNodes(data,String(client.id));
 
-    console.log('init',states);
+    //console.log('init',states);
 
     baseServer.mqttServer.publish({
         topic:settings.baseTopic+"clientadded",
