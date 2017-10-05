@@ -11,6 +11,7 @@ function getState(tddata) {
     var ret = 'off';
     if (tddata && tddata.name)
         ret = tddata.name=='ON'?'on':'off';
+    return ret;
 }
 
 function getSensors() {
@@ -82,14 +83,9 @@ var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
     homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
 });
 
-var listener = telldus.addRawDeviceEventListener(function(controllerId, data) {
-    console.log('Raw device event: ' + data);
-    homeninja.client.publish('telldus/raw',JSON.stringify(toObj(data)));
-});
-
 var devlistener = telldus.addDeviceEventListener(function(deviceId, status) {
-    common.findNode('/elldus/conf'+deviceId,nodes,function(elm) {
-        elm.state = status;
+    common.findNode('telldus/conf'+deviceId,nodes,function(elm) {
+        elm.state = getState(status);
         homeninja.updateNodes([elm]);
     });
     console.log('Device ' + deviceId + ' is now ' + status.name);
