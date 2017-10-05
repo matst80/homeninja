@@ -8,7 +8,7 @@ namespace HomeNinjaApp
     {
         public MainPage()
         {
-            Page itemsPage, aboutPage = null;
+            Page itemsPage, mapPage = null;
 
             switch (Device.RuntimePlatform)
             {
@@ -18,12 +18,12 @@ namespace HomeNinjaApp
                         Title = "Browse"
                     };
 
-                    aboutPage = new NavigationPage(new AboutPage())
+                    mapPage = new NavigationPage(new MapPage())
                     {
-                        Title = "About"
+                        Title = "Map"
                     };
                     itemsPage.Icon = "tab_feed.png";
-                    aboutPage.Icon = "tab_about.png";
+                    mapPage.Icon = "tab_about.png";
                     break;
                 default:
                     itemsPage = new ItemsPage()
@@ -31,15 +31,15 @@ namespace HomeNinjaApp
                         Title = "Browse"
                     };
 
-                    aboutPage = new AboutPage()
+                    mapPage = new MapPage()
                     {
-                        Title = "About"
+                        Title = "Map"
                     };
                     break;
             }
 
             Children.Add(itemsPage);
-            Children.Add(aboutPage);
+            Children.Add(mapPage);
 
             Title = Children[0].Title;
         }
