@@ -111,6 +111,7 @@ homeninja.client.on('message', function (topic, msg) {
 	telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
             console.log('deviceId is now ',message);
             homeninja.sendState(node,message);
+            homeninja.updateNodes([node]);
             //homeninja.client.publish(node.topic+'/state',message);
         });
     });
