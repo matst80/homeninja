@@ -4,7 +4,8 @@ module.exports = {
     baseTopic: "homeninja/",
     customization: {
         "telldus/conf20": {
-            name:'Lampa ovanför soffan'
+            name:'Lampa ovanför soffan',
+            custom:'customdata'
         }
     },
     usn: [//'upnp:rootdevice',
