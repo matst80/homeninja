@@ -40,9 +40,10 @@ namespace HomeNinjaApp.Helper
             dataToSend.Add(node);
             await Send("homeninja/nodeupdate", dataToSend);
         }
+
         private IMqttClient _mqttClient;
 
-        public async Task<System.Net.Mqtt.IMqttClient> GetClient() {
+        public async Task<IMqttClient> GetClient() {
             if (_mqttClient == null)
             {
                 _mqttClient = await System.Net.Mqtt.MqttClient.CreateAsync("fw.knatofs.se", new System.Net.Mqtt.MqttConfiguration()

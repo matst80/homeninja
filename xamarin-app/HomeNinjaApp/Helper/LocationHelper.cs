@@ -18,9 +18,11 @@ namespace HomeNinjaApp.Helper
         public void StartLocationTracking() {
             var locator = CrossGeolocator.Current;
 
-            CrossGeolocator.Current.PositionChanged += async (object sender, PositionEventArgs e) => {
+
+            locator.PositionChanged += async (object sender, PositionEventArgs e) => {
                 await ServerHelper.Instance.SendPosition(e.Position);
             };
+            locator.StartListeningAsync(TimeSpan.FromMinutes(1),5,true);
         }
 
         private static LocationHelper _instance;
