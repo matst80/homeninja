@@ -46,7 +46,7 @@ function getNodes() {
             if (v.methods.indexOf('LEARN')!=-1)
                 features.push('learn');
             if (v.methods.indexOf('DIMMER')!=-1)
-                features.push('bright');
+                features.push('brightness');
             console.log(v);
             return {
                 tdid: v.id,
@@ -56,6 +56,7 @@ function getNodes() {
                 topic: "telldus/conf"+v.id
             };
         }));
+        homeninja.sendNodes(nodes);
         if (tempTimeout)
             clearTimeout(tempTimeout);
         getSensors();
