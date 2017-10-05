@@ -88,16 +88,16 @@ function parseNodes(data,clientid) {
                 var node = states.nodes[url]||{state:'unknown'};
                 node.clientId = clientid;
                 var changed = node.state!=ndata.state;
-                var nn = extend(ndata,node);
+                var nn = extend(node,ndata);
                 if (settings.customization && settings.customization[url]) {
-                    nn = extend(nn,settings.customization[url]);
+                    nn = extend(settings.customization[url],nn);
                 }
                 
                 nn.lastSeen = new Date();
                 states.nodes[url] = nn;
                 if (changed) {
                     ret.push(nn);
-                    console.log(nn);
+                    console.log('changed or added',nn);
                 }
             }
         }
