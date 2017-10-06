@@ -51,7 +51,7 @@
         function createOrUpdate(item) {
             //var id = item.topic.replace('/','');
             var elm = document.getElementById(item.topic);
-            console.log('hoho',elm);
+            //console.log('hoho',elm);
             if (!elm)
             {
                 elm = document.createElement('div');
@@ -59,11 +59,7 @@
                 elm.addEventListener('click',function() {
                     var state = this.classList.contains('off');
                     //console.log('click',item);
-                    if (state) {
-                        //this.classList.remove('off');
-                    }
-                    else
-                        //this.classList.add('off');
+                    
                         client.publish(item.topic+"/set",state?"on":"off");
                     
                 },true);
