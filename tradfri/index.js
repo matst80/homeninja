@@ -4,16 +4,18 @@ var homeninja = require("../nodehelper/nodehelper").init(settings);
 var common = require("../common/index");
 var tradfriHub = new tradfri(settings.hubSettings);
 var devices = [];
+var isConnected;
 
 homeninja.on('connect',function() {
-   
+   if(!isConnected)
         findBridges(function() {
             console.log('bridge found, saving');
             homeninja.save(settings.bridgeConfigKey,bridges,function(d){
                 console.log(d);
             });
         });
-   
+    else
+        homeninja.sendNodes(devices);
     homeninja.client.subscribe(settings.baseTopic+'+/set');
 });
 
@@ -29,35 +31,20 @@ homeninja.on('connect',function() {
 
 homeninja.client.on('message', function (topic, msg) {
     // message is Buffer
-    var message = msg.toString();
-    console.log(topic,message);
+    var send = JSON.parse(msg.toString());
+    console.log(topic,send);
     
     common.findNode(topic,devices,function(node) {
         
-        let level = message-0;
-        let state = 1;
-        let time = 2;
         
-        if (message==level) {
-            if (level==0)
-                state = 0;
-            time = 1;
-            //console.log('brightness');
-        }
-        else {
-            //level = 254;
-            state = (message=='on')?1:0;
-            level = state?254:0;
-        }
-        var send = {
-            state: state,
-            brightness: level
-          };
         console.log('update',node.id,send);
         //tradfriHub.connect().then( function(val) {
             tradfriHub.setDevice(node.id, send,2).then(function(res) {
                 console.log(res);
-                homeninja.client.publish(node.topic+'/state',level.toString());
+                homeninja.sendState(node,send.brightness.toString());
+                node.state = send;
+                //homeninja.client.publish(node.topic+'/state',JSON.stringify(send));
+                homeninja.updateNodes([node]);
                 console.log("New value send to device");
             }).catch(function(err) {
                 console.log('catch',err);
@@ -77,19 +64,34 @@ function findBridges(onBridgeFound) {
     
     
     tradfriHub.connect().then( function(val) {
+        isConnected = true;
         console.log(val);
         tradfriHub.getAllDevices().then(function(res) {
             //console.log(res);
             devices = res.map(function(i) {
                 console.log('device',i);
+                var st = i["3311"];
+                if (st) 
+                    return {
+                        topic:settings.baseTopic+i['9003'],
+                        name:i['9001'],
+                        id:i['9003'],
+                        state: {
+                            brightness: st[0]["5851"],
+                            state: st[0]["5850"]
+                        },
+                        features: ['lighttemp','brightness','onoff']
+                    }
                 return {
                     topic:settings.baseTopic+i['9003'],
                     name:i['9001'],
                     id:i['9003'],
-                    state: {},
-                    features: ['lighttemp','brightness','onoff']
+                    state: false,
+                    features: ['remote']
                 }
+                
             });
+            console.log('sending',devices);
             homeninja.sendNodes(devices);
         });
         tradfriHub.getGatewayInfo().then( function(res) {
