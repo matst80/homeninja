@@ -17,6 +17,7 @@
     "mosca": "^2.5.2",
     "node-ssdp": "^3.2.4",
     "node.extend": "^2.0.0",
+    "nodejs-websocket": "^1.7.1",
     "websocket": "^1.0.24"
   }
 }

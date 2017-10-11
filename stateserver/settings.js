@@ -1,4 +1,4 @@
-var mongoBaseUrl = "mongodb://10.10.10.1:27017/";
+var mongoBaseUrl = "mongodb://127.0.0.1:27017/";
 
 module.exports = {
     baseTopic: "homeninja/",
@@ -33,12 +33,12 @@ module.exports = {
         },*/
         backend: {
             type: 'mongo',
-            url: mongoBaseUrl + 'homepersistance2',
-            pubsubCollection: 'ascoltatori',
+            url: mongoBaseUrl + 'homemqtt2',
+            pubsubCollection: 'ascoltatori2',
             mongo: {
 
             }
         }
     },
-    mongoPersistanceUrl: mongoBaseUrl + 'homeninja'
+    mongoPersistanceUrl: mongoBaseUrl + 'homeninja3'
 };

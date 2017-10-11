@@ -1,6 +1,6 @@
 var settings = require('./settings'),
     extend = require('node.extend'),
-    MongoClient = require('mongodb').MongoClient,
+ //   MongoClient = require('mongodb').MongoClient,
     jsonfile = require('jsonfile');
     baseServer = require('./baseserver')(settings),
     vm = require('vm');
@@ -10,7 +10,7 @@ var dbCache = {},
         clientId: '',
         topic:'',
         features: [],
-        state: {},
+        //state: {},
         lastSeen: new Date()
     },
     states = {
@@ -24,6 +24,8 @@ jsonfile.readFile('./states.json',function(err,obj) {
     if (!err)
     {
         states = obj;
+        states.nodes = {};
+//        states.customization = {};
     }
 });
 
@@ -44,30 +46,7 @@ function saveStates() {
     console.log('save states!!!');
 }
 
-function parsePacket(packet) {
-    var ret = [];
-    
-    var data = packet.payload.toString();
-    //console.log(data);
-    if (data.indexOf('{')==0 || data.indexOf('[')==0) {
-        var obj = JSON.parse(data);
-        //console.log('packet as json',obj);
-        ret = obj.length?obj:[obj];
-    }
-    else {
-        //console.log('packet as string',data);        
-        data.split('\n').forEach(function(arrpart){    
-            var row = {};
-            arrpart.split(';').forEach(function(v) {
-                //console.log('part',v);
-                var pp = v.split('=');
-                row[pp[0]] = pp[1];
-            }, this);
-            ret.push(row);
-        });
-    }
-    return ret.length?ret:[ret];
-}
+
 
 var stateTimeout;
 function statesChanged() {
@@ -91,19 +70,23 @@ function hasChange(a,b) {
     if (a.name!=b.name) {
         return true;
     }
+    if (a.desciption!=b.desciption) {
+        return true;
+    }
     return false;
 }
 
 function parseNodes(data,clientid) {
     var ret = [];
     data.forEach(function(n) {
-        //console.log(n);
-        if (n.topic || n.features) {
+        //console.log('checkchange',n);
+		
+        if (n && (n.topic || n.features)) {
             var ndata = parseNode(n);
             //console.log('found node',ndata);
             if (ndata) {
                 var url = ndata.topic||(settings.baseTopic+clientid);
-                var node = states.nodes[url]||{state:'unknown'};
+                var node = states.nodes[url]||{};
                 if (clientid)
                     node.clientId = clientid;
                 var changed = hasChange(node,ndata);
@@ -111,12 +94,12 @@ function parseNodes(data,clientid) {
                 if (states.customization && states.customization[url]) {
                     extend(node,states.customization[url]);
                 }
-                changed = changed||hasChange(node,ndata)
+                changed = changed||hasChange(node,ndata);
                 node.lastSeen = new Date();
                 states.nodes[url] = node;
                 if (changed) {
                     ret.push(node);
-                    console.log('changed or added',node);
+                    //console.log('changed or added',node);
                 }
             }
         }
@@ -128,42 +111,45 @@ function parseNodes(data,clientid) {
 
 function updateNodes(data,clientid) {
     var updatedNodes = parseNodes(data,clientid);
-
-    baseServer.mqttServer.publish({
+    if (updatedNodes.length)
+        baseServer.broadcast(settings.baseTopic+"nodechange",updatedNodes);
+    /*baseServer.mqttServer.publish({
         topic:settings.baseTopic+"nodechange",
         payload:JSON.stringify(updatedNodes),
         qos: 0, // 0, 1, or 2
         retain: false // or true
     },function(){
         console.log('update packet sent');
-    });
+    });*/
 }
 
-baseServer.addTopicHandler("nodeupdate",function(packet,client) {
-    var data = parsePacket(packet);
-    console.log('nodeupdate',client.id);
+baseServer.addTopicHandler("nodeupdate",function(topic,data,client) {
+    //var data = parsePacket(packet);
+    console.log('nodeupdate',data);
     if (data && data.length) {
         updateNodes(data,client.id.toString());
     }
 });
 
 
-baseServer.addTopicHandler("init",function(packet,client) {
-    var data = parsePacket(packet);
-    console.log('preinit',client.id);
-    if (data && data.length)
-        parseNodes(data,String(client.id));
+baseServer.addTopicHandler("init",function(topic,data,client) {
+    //var data = parsePacket(packet);
+    //console.log('preinit',client.id);
+    if (data && data.length) {
+        updateNodes(data,client.id);
+    }
+        //parseNodes(data,String(client.id));
 
     //console.log('init',states);
-
-    baseServer.mqttServer.publish({
+    baseServer.broadcast(settings.baseTopic+"clientadded",client.id);
+    /*baseServer.mqttServer.publish({
         topic:settings.baseTopic+"clientadded",
         payload:JSON.stringify(states),
         qos: 0, // 0, 1, or 2
         retain: false // or true
     },function(){
         console.log('init packet sent');
-    });
+    });*/
 });
 
 const contextSandbox = {
@@ -227,14 +213,17 @@ baseServer.addApiHandler("node", function(req,cb) {
 
 baseServer.addApiHandler("sendstate", function(req,cb) {
     var data = JSON.parse(req.data);
-    baseServer.mqttServer.publish({
+    console.log('send state date',data);
+    baseServer.broadcast(data.topic,data.state);
+    cb({ok:true});
+    /*baseServer.mqttServer.({
         topic:data.topic,
         payload:data.state,
         qos: 0, // 0, 1, or 2
         retain: false // or true
     },function(){
         cb(true);
-    });
+    });*/
 });
 
 baseServer.addApiHandler("load",function(req,cb){
