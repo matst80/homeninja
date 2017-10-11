@@ -3,7 +3,7 @@ var url = require('url');
 var path = require('path');
 var fs = require('fs');
 var http = require('http');
-var ws = require('websocket').server;
+var ws = require("nodejs-websocket");
 const map = require('./mimemap');
 var wsServer;
 var apiUrl = '/api/';
@@ -15,7 +15,7 @@ var apiFunctions = {};
 var topicFunctions = {};
 
 function addToIndex(id,data,cb) {
-    if (elasticServer) {
+    if (elasticServer && false) {
         var options = {
             "host": elasticServer.host,
             "path": elasticServer.baseUrl + id,
@@ -59,6 +59,8 @@ function createHttpServer() {
                         data: data,
                         baseRequest:req
                     },function(d) {
+			res.setHeader('Content-type', 'application/json' );
+			res.setHeader('Access-Control-Allow-Origin', '*' );
                         res.end(JSON.stringify(d));
                     });
                 } 
@@ -134,6 +136,31 @@ function createHttpServer() {
     return ret;
 }
 
+function parsePacket(packet) {
+    var ret = [];
+    
+    var data = packet.payload.toString();
+    //console.log(data);
+    if (data.indexOf('{')==0 || data.indexOf('[')==0) {
+        var obj = JSON.parse(data);
+        //console.log('packet as json',obj);
+        ret = obj.length?obj:[obj];
+    }
+    else {
+        //console.log('packet as string',data);        
+        data.split('\n').forEach(function(arrpart){    
+            var row = {};
+            arrpart.split(';').forEach(function(v) {
+                //console.log('part',v);
+                var pp = v.split('=');
+                row[pp[0]] = pp[1];
+            }, this);
+            ret.push(row);
+        });
+    }
+    return ret.length?ret:[ret];
+}
+
 module.exports = function(settings) {
         elasticServer=settings.elasticsearch.baseUrl;
 
@@ -145,19 +172,51 @@ module.exports = function(settings) {
         function broadcastNew() {
             var message = new Buffer("homeninja-stateserver");
             dgramServer.send(message, 0, message.length, settings.broadcast.port||6024, settings.broadcast.addr||'255.255.255.255', function() {
-                console.log("Sent '" + message + "'");
+                //console.log("Sent '" + message + "'");
             });
         }
+
         
+        
+        var wsserver = ws.createServer(function (conn) {
+            console.log("New connection")
+            conn.on("text", function (str) {
+                console.log("Received "+str);
+                var data = JSON.parse(str);
+                if (data.topic) {
+
+                }
+                //conn.sendText(str.toUpperCase()+"!!!")
+            })
+            conn.on("close", function (code, reason) {
+                console.log("Connection closed")
+            })
+        }).listen(8001);
+
+        function wsBroadcast(topic,data) {
+            var jsondata = JSON.stringify({topic:topic, data:data});
+            wsserver.connections.forEach(function (conn) {
+                console.log('send ws to client',conn.key);
+                conn.sendText(jsondata);
+            });
+        }
 
         var httpServ = createHttpServer();
         var server = new mosca.Server(settings.mqttSettings);
         server.attachHttpServer(httpServ);
         server.on('published', function(packet, client) {
-            console.log('got data',packet.topic);
+            if (client==null)
+                return;
+            console.log('got data',packet.topic,client.id);
             addToIndex('mqttstatus/',{topic:packet.topic,message:packet.toString()});
             var func = topicFunctions[String(packet.topic)];
-            func&&func(packet,client);
+            var data = parsePacket(packet);
+            if (packet.topic.indexOf('$')==-1 && !func) {
+                //wsBroadcast(packet.topic,data);
+                //console.log('relay websocket',packet.topic);
+            }
+            //console.log('wsbroadcast');
+            func&&func(packet.topic,data,client);
         });
     
         server.on('clientConnected', function(client) {
@@ -180,7 +239,21 @@ module.exports = function(settings) {
             addApiHandler:function(url,func) {
                 apiFunctions[apiUrl+url] = func;
             },
-            mqttServer:server,
+            broadcast: function(topic,data,cb) {
+                console.log('send broadcast data',topic);
+                
+                server.publish({
+                    topic:topic,
+                    payload:new Buffer(JSON.stringify(data)),
+                    qos: 0, // 0, 1, or 2
+                    retain: false // or true
+                },function(){
+                    if (cb)
+                        cb(true);
+                });
+                wsBroadcast(topic,data);
+            },
+            //mqttServer:server,
             addTopicHandler:function(topic,func) {
                 topicFunctions[settings.baseTopic+topic] = func;
             }

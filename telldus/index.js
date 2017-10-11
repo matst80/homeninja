@@ -104,10 +104,10 @@ homeninja.client.on('message', function (topic, msg) {
     //console.log(topic,message,nodes);
     common.findNode(topic,nodes,function(node) {
         console.log('turning',node,message);        
-	var on = (message=="on");
+	var on = (message.indexOf("on")!=-1);
 	telldus[on?'turnOn':'turnOff'](node.tdid,function(err) {
             console.log('deviceId is now ',message);
-            homeninja.sendState(node,message);
+            homeninja.sendState(node,on?'on':'off');
             homeninja.updateNodes([node]);
             //homeninja.client.publish(node.topic+'/state',message);
         });
